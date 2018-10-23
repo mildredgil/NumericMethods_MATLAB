@@ -1,4 +1,4 @@
-classdef methodSelector < matlab.apps.AppBase
+classdef Naomi < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -46,6 +46,7 @@ classdef methodSelector < matlab.apps.AppBase
     methods (Access = private)
         
         function results = func(app)
+            % Se hace desaparecer todo y los valores se reinician
             app.ListBox_4.Visible = false;
             app.ListBox_3.Visible = false;
             app.ListBox_2.Visible = false;
@@ -132,63 +133,77 @@ classdef methodSelector < matlab.apps.AppBase
             % Desaparece todo
             func(app);
             % Aparece solo lo que se selecciona
-            if(selectedButton == app.NolinearequationButton_2)
-                % por default esta seleccionado Biseccion
-                app.ListBox_2.Value = "Bisection";
-                app.ListBox_2.Visible = true;
-                % Ecuacion
-                app.EcuationEditField.Visible = true;
-                app.EcuationxLabel.Visible = true;
-                % Rango
-                app.MaxEditField_2.Visible = true;
-                app.MaxEditField_2Label.Visible = true;
-                app.MinEditField_2Label.Visible = true;
-                app.MinEditField_2.Visible = true;
-                app.RangeofIntervalLabel.Visible = true;
-                % Iteraciones
-                app.IterationsLabel.Visible = true;
-                app.IterationsEditField.Visible = true;
-                % Grafico
-                app.UIAxes.Visible = true;
-            elseif(selectedButton == app.NumericalintegrationButton_2)
-                app.ListBox_4.Visible = true;
-                % por default esta seleccionado Euler
-                app.ListBox_4.Value = "Euler";
-                % falta el codigo
-            elseif(selectedButton == app.NolinearequationsystemButton_2)
-                app.ListBox_3.Visible = true;
-                % por default esta Trapezoidal multiple
-                app.ListBox_3.Value = "Trapezoidal multiple";
-                % falta el codigo
-            elseif(selectedButton == app.DiferentialequationsystemButton_2)
-                % por default esta seleccionado Gauss-Seidel
-                app.ListBox.Value = "Gauss-Seidel";
-                app.ListBox.Visible = true;
-                % Tablas
-                app.UITable.Visible = true;
-                app.UITable2.Visible = true;
-                app.AXLabel.Visible = true;
-                app.BLabel.Visible = true;
-                % Iteraciones
-                app.IterationsLabel.Visible = true;
-                app.IterationsEditField.Visible = true;
-                % x#
-                app.XSpinner.Visible = true;
-                app.XSpinnerLabel.Visible = true;
+            switch(selectedButton)
+                case app.NolinearequationButton_2
+                    % por default esta seleccionado Biseccion
+                    app.ListBox_2.Visible=true;
+                    app.ListBox_2.Value = "Bisection";
+                    % objetos que necesita
+                    % Ecuacion
+                    app.EcuationEditField.Visible = true;
+                    app.EcuationxLabel.Visible = true;
+                    % Rango
+                    app.MaxEditField_2.Visible = true;
+                    app.MaxEditField_2Label.Visible = true;
+                    app.MinEditField_2Label.Visible = true;
+                    app.MinEditField_2.Visible = true;
+                    app.RangeofIntervalLabel.Visible = true;
+                    % Iteraciones
+                    app.IterationsLabel.Visible = true;
+                    app.IterationsEditField.Visible = true;
+                    % Grafico
+                    app.UIAxes.Visible = true;
+                case app.NumericalintegrationButton_2
+                    app.ListBox_3.Visible=true;
+                    % por default esta Trapezoidal multiple
+                    app.ListBox_3.Value = "Trapezoidal multiple";
+                    % falta codigo
+                case app.NolinearequationsystemButton_2
+                    app.ListBox.Visible=true;
+                    % por default esta seleccionado Gauss-Seidel
+                    app.ListBox.Value = "Gauss-Seidel";
+                    % objetos que necesita
+                    % Tablas
+                    app.UITable.Visible = true;
+                    app.UITable2.Visible = true;
+                    app.AXLabel.Visible = true;
+                    app.BLabel.Visible = true;
+                    % Iteraciones
+                    app.IterationsLabel.Visible = true;
+                    app.IterationsEditField.Visible = true;
+                    % x#
+                    app.XSpinner.Visible = true;
+                    app.XSpinnerLabel.Visible = true;
+                case app.DiferentialequationsystemButton_2
+                    app.ListBox_4.Visible=true;
+                    % por default esta seleccionado Euler
+                    app.ListBox_4.Value = "Euler";
+                    % falta codigo
             end
         end
 
         % Value changed function: ListBox_4
         function ListBox_4ValueChanged(app, event)
             value = app.ListBox_4.Value;
-            if(value == "Clasico Runge-kutta")
-                % falta el codigo
+            % se vuelve a eliminar todo
+            func(app);
+            % objetos que todas las funciones necesitan
+            app.ListBox_4.Visible = true;
+            % objetos de cada funcion
+            if(value == "Euler")
+                % falta codigo
+            elseif(value == "Clasico Runge-kutta")
+                % falta codigo
             end
         end
 
         % Value changed function: ListBox
         function ListBoxValueChanged(app, event)
             value = app.ListBox.Value;
+            % se vuelve a eliminar todo
+            func(app);
+            % objetos que todas las funciones necesitan
+            app.ListBox.Visible = true;
             % Tablas
             app.UITable.Visible = true;
             app.UITable2.Visible = true;
@@ -200,6 +215,7 @@ classdef methodSelector < matlab.apps.AppBase
             % x#
             app.XSpinner.Visible = true;
             app.XSpinnerLabel.Visible = true;
+            % objetos de cada funcion
             if(value == "Gauss-Seidel")
                 %
             elseif(value == "Newton-Raphson")
@@ -210,10 +226,10 @@ classdef methodSelector < matlab.apps.AppBase
         % Value changed function: ListBox_2
         function ListBox_2ValueChanged(app, event)
             value = app.ListBox_2.Value;
+            % se vuelve a eliminar todo
             func(app);
-            % Cosas default
+            % objetos que todas las funciones necesitan
             app.ListBox_2.Visible = true;
-            app.UIAxes.Visible = true;
             % Ecuacion
             app.EcuationEditField.Visible = true;
             app.EcuationxLabel.Visible = true;
@@ -222,6 +238,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.IterationsEditField.Visible = true;
             % Grafico
             app.UIAxes.Visible = true;
+            % objetos de cada funcion
             if(value == "Bisection" || value == "Regular Falsi")
                 % Rango
                 app.MaxEditField_2.Visible = true;
@@ -245,19 +262,56 @@ classdef methodSelector < matlab.apps.AppBase
         % Value changed function: ListBox_3
         function ListBox_3ValueChanged(app, event)
             value = app.ListBox_3.Value;
-            if(value == "Simpson 3/8 multiple")
-                % falta el codigo
+            % se vuelve a eliminar todo
+            func(app);
+            % objetos que todas las funciones necesitan
+            app.ListBox_3.Visible = true;
+            % objetos de cada funcion
+            if(value == "Trapezoidal multiple")
+                % falta codigo
+            elseif(value == "Simpson 3/8 multiple")
+                % falta codigo
             end
         end
 
         % Button pushed function: CalcularButton
         function CalcularButtonPushed(app, event)
             % Se asume que los valores ingresados son validos
+            switch(app.ChooseyourtypeofproblemButtonGroup.SelectedObject)
+                case app.NolinearequationButton_2
+                    switch(app.ListBox_2.Value)
+                        case "Bisection"
+                            
+                        case "Regular Falsi"
+                            
+                        case "Simple Iteration fix point"
+                            
+                        case "Newton- Raphson"
+                            
+                    end
+                case app.NumericalintegrationButton_2
+                    switch(app.ListBox_3.Value)
+                        case "Trapezoidal multiple"
+                            
+                        case "Simpson 3/8 multiple"
+                            
+                    end
+                case app.NolinearequationsystemButton_2
+                    switch(app.ListBox.Value)
+                        case "Gauss-Seidel"
+                            
+                        case "Newton-Raphson"
+                            
+                    end
+                case app.DiferentialequationsystemButton_2
+                    
+            end
         end
 
         % Value changed function: XSpinner
         function XSpinnerValueChanged(app, event)
             value = app.XSpinner.Value;
+            % cada vez que se cambia el valor, se actualizan las tablas
             app.UITable.Data = zeros(value);
             app.UITable2.Data = zeros(value,1);
         end
@@ -569,7 +623,7 @@ classdef methodSelector < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = methodSelector
+        function app = Naomi
 
             % Create and configure components
             createComponents(app)
