@@ -1,0 +1,382 @@
+classdef methodSelector < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                        matlab.ui.Figure
+        NumiiSolveLabel                 matlab.ui.control.Label
+        MathproblemIdoitforyouLabel     matlab.ui.control.Label
+        ChooseyourtypeofproblemButtonGroup  matlab.ui.container.ButtonGroup
+        NolinearequationButton_2        matlab.ui.control.ToggleButton
+        NumericalintegrationButton_2    matlab.ui.control.ToggleButton
+        NolinearequationsystemButton_2  matlab.ui.control.ToggleButton
+        DiferentialequationsystemButton_2  matlab.ui.control.ToggleButton
+        ListBox                         matlab.ui.control.ListBox
+        ListBox_2                       matlab.ui.control.ListBox
+        ListBox_3                       matlab.ui.control.ListBox
+        ListBox_4                       matlab.ui.control.ListBox
+        UIAxes                          matlab.ui.control.UIAxes
+        EquationEditFieldLabel          matlab.ui.control.Label
+        EquationEditField               matlab.ui.control.EditField
+        RangeofIntervalLabel            matlab.ui.control.Label
+        MinEditField_2Label             matlab.ui.control.Label
+        MinEditField_2                  matlab.ui.control.NumericEditField
+        MaxEditField_2Label             matlab.ui.control.Label
+        MaxEditField_2                  matlab.ui.control.NumericEditField
+        IterationsLabel                 matlab.ui.control.Label
+        IterationsEditField             matlab.ui.control.NumericEditField
+        NoofEquationsDropDownLabel      matlab.ui.control.Label
+        NoofEquationsDropDown           matlab.ui.control.DropDown
+    end
+
+    methods (Access = private)
+
+        % Code that executes after component creation
+        function startupFcn(app)
+   app.NolinearequationButton_2
+   app.ListBox.Visible= false;
+    app.ListBox_2.Visible= true;
+     app.ListBox_3.Visible= false;
+      app.ListBox_4.Visible= false;
+        end
+
+        % Selection changed function: 
+        % ChooseyourtypeofproblemButtonGroup
+        function ChooseyourtypeofproblemButtonGroupSelectionChanged(app, event)
+            selectedButton = app.ChooseyourtypeofproblemButtonGroup.SelectedObject;
+            if selectedButton==app.NolinearequationButton_2
+            app.ListBox_2.Visible=true;
+            else
+                app.ListBox_2.Visible=false;
+               
+            end
+                if(selectedButton==app.NumericalintegrationButton_2)
+            app.ListBox_3.Visible=true;
+            else
+                app.ListBox_3.Visible=false;
+                end
+                if(selectedButton==app.NolinearequationsystemButton_2)
+            app.ListBox.Visible=true;
+            else
+                app.ListBox.Visible=false;
+                end
+                if(selectedButton==app.DiferentialequationsystemButton_2)
+            app.ListBox_4.Visible=true;
+            else
+                app.ListBox_4.Visible=false;
+                end
+                
+            
+        end
+
+        % Value changed function: ListBox_4
+        function ListBox_4ValueChanged(app, event)
+            value = app.ListBox_4.Value;
+            
+        end
+
+        % Value changed function: ListBox_2
+        function ListBox_2ValueChanged(app, event)
+            value = app.ListBox_2.Value;
+            
+            switch value
+                case 'bisection'
+                    app.MaxEditField_2.Visible =true;
+                    app.MaxEditField_2Label.Visible =true;
+                    app.MinEditField_2.Visible =true;
+                    app.MinEditField_2Label.Visible =true;
+                    app.RangeofIntervalLabel.Visible =true;
+                    app.IterationsEditField.Visible =true;
+                    app.IterationsLabel.Visible =true;
+                case 'regula'
+                    app.MaxEditField_2.Visible =true;
+                    app.MaxEditField_2Label.Visible =true;
+                    app.MinEditField_2.Visible =true;
+                    app.MinEditField_2Label.Visible =true;
+                    app.RangeofIntervalLabel.Visible =true;
+                    app.IterationsEditField.Visible =true;
+                    app.IterationsLabel.Visible =true;
+                case 'simpleit'
+                    app.MaxEditField_2.Visible =false;
+                    app.MaxEditField_2Label.Visible =false;
+                    app.MinEditField_2.Visible =true;
+                    app.MinEditField_2Label.Visible =true;
+                    app.RangeofIntervalLabel.Visible =true;
+                    app.IterationsEditField.Visible =true;
+                    app.IterationsLabel.Visible =true;
+                case 'newtonr'
+                    app.MaxEditField_2.Visible =false;
+                    app.MaxEditField_2Label.Visible =false;
+                    app.MinEditField_2.Visible =true;
+                    app.MinEditField_2Label.Visible =true;
+                    app.RangeofIntervalLabel.Visible =true;
+                    app.IterationsEditField.Visible =true;
+                    app.IterationsLabel.Visible =true;
+            end
+        end
+
+        % Value changed function: ListBox
+        function ListBoxValueChanged(app, event)
+            value = app.ListBox.Value;
+            
+            switch value
+                case 'gauss'
+                    app.NoofEquationsDropDown.Visible =true;
+                    app.NoofEquationsDropDownLabel.Visible =true;
+                    app.MaxEditField_2.Visible =false;
+                    app.MaxEditField_2Label.Visible =false;
+                    app.MinEditField_2.Visible =false;
+                    app.MinEditField_2Label.Visible =false;
+                    app.RangeofIntervalLabel.Visible =false;
+                    app.IterationsEditField.Visible =false;
+                    app.IterationsLabel.Visible =false;
+                case 'newton'
+                    app.NoofEquationsDropDown.Visible =true;
+                    app.NoofEquationsDropDownLabel.Visible =true;
+                    app.MaxEditField_2.Visible =false;
+                    app.MaxEditField_2Label.Visible =false;
+                    app.MinEditField_2.Visible =false;
+                    app.MinEditField_2Label.Visible =false;
+                    app.RangeofIntervalLabel.Visible =false;
+                    app.IterationsEditField.Visible =false;
+                    app.IterationsLabel.Visible =false;
+            end
+            
+        end
+
+        % Value changed function: ListBox_3
+        function ListBox_3ValueChanged(app, event)
+            value = app.ListBox_3.Value;
+           
+        end
+    end
+
+    % App initialization and construction
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure
+            app.UIFigure = uifigure;
+            app.UIFigure.Color = [0.8078 0.9098 0.9686];
+            app.UIFigure.Position = [100 100 670 485];
+            app.UIFigure.Name = 'UI Figure';
+
+            % Create NumiiSolveLabel
+            app.NumiiSolveLabel = uilabel(app.UIFigure);
+            app.NumiiSolveLabel.FontName = 'Georgia';
+            app.NumiiSolveLabel.FontSize = 36;
+            app.NumiiSolveLabel.FontWeight = 'bold';
+            app.NumiiSolveLabel.Position = [219 407 233 45];
+            app.NumiiSolveLabel.Text = 'Numii Solve';
+
+            % Create MathproblemIdoitforyouLabel
+            app.MathproblemIdoitforyouLabel = uilabel(app.UIFigure);
+            app.MathproblemIdoitforyouLabel.FontName = 'Berlin Sans FB';
+            app.MathproblemIdoitforyouLabel.Position = [370 386 154 22];
+            app.MathproblemIdoitforyouLabel.Text = 'Math problem? I do it for you!';
+
+            % Create ChooseyourtypeofproblemButtonGroup
+            app.ChooseyourtypeofproblemButtonGroup = uibuttongroup(app.UIFigure);
+            app.ChooseyourtypeofproblemButtonGroup.SelectionChangedFcn = createCallbackFcn(app, @ChooseyourtypeofproblemButtonGroupSelectionChanged, true);
+            app.ChooseyourtypeofproblemButtonGroup.ForegroundColor = [0 0.451 0.7412];
+            app.ChooseyourtypeofproblemButtonGroup.Title = 'Choose your type of problem:';
+            app.ChooseyourtypeofproblemButtonGroup.BackgroundColor = [1 1 1];
+            app.ChooseyourtypeofproblemButtonGroup.FontName = 'Arial Rounded MT Bold';
+            app.ChooseyourtypeofproblemButtonGroup.FontWeight = 'bold';
+            app.ChooseyourtypeofproblemButtonGroup.Position = [53 265 565 104];
+
+            % Create NolinearequationButton_2
+            app.NolinearequationButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
+            app.NolinearequationButton_2.Text = 'No linear equation';
+            app.NolinearequationButton_2.BackgroundColor = [0.8235 1 0.9608];
+            app.NolinearequationButton_2.FontName = 'Cambria';
+            app.NolinearequationButton_2.Position = [53 51 170 22];
+            app.NolinearequationButton_2.Value = true;
+
+            % Create NumericalintegrationButton_2
+            app.NumericalintegrationButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
+            app.NumericalintegrationButton_2.Text = 'Numerical integration';
+            app.NumericalintegrationButton_2.BackgroundColor = [0.9137 0.7647 0.4941];
+            app.NumericalintegrationButton_2.FontName = 'Cambria';
+            app.NumericalintegrationButton_2.Position = [341 51 170 22];
+
+            % Create NolinearequationsystemButton_2
+            app.NolinearequationsystemButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
+            app.NolinearequationsystemButton_2.Text = 'No linear equation system';
+            app.NolinearequationsystemButton_2.BackgroundColor = [1 1 0.7843];
+            app.NolinearequationsystemButton_2.FontName = 'Cambria';
+            app.NolinearequationsystemButton_2.Position = [53 15 170 22];
+
+            % Create DiferentialequationsystemButton_2
+            app.DiferentialequationsystemButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
+            app.DiferentialequationsystemButton_2.Text = 'Diferential equation system';
+            app.DiferentialequationsystemButton_2.BackgroundColor = [0.9176 0.7882 1];
+            app.DiferentialequationsystemButton_2.FontName = 'Cambria';
+            app.DiferentialequationsystemButton_2.Position = [341 15 170 22];
+
+            % Create ListBox
+            app.ListBox = uilistbox(app.UIFigure);
+            app.ListBox.Items = {'Gauss-Seidel', 'Newton-Raphson'};
+            app.ListBox.ItemsData = {'gauss', 'newton'};
+            app.ListBox.ValueChangedFcn = createCallbackFcn(app, @ListBoxValueChanged, true);
+            app.ListBox.BackgroundColor = [1 1 0.7843];
+            app.ListBox.Position = [54 209 186 38];
+            app.ListBox.Value = {};
+
+            % Create ListBox_2
+            app.ListBox_2 = uilistbox(app.UIFigure);
+            app.ListBox_2.Items = {'Bisection', 'Regular Falsi', 'Simple Iteration fix point', 'Newton- Raphson'};
+            app.ListBox_2.ItemsData = {'bisection', 'regula', 'simpleit', 'newtonr'};
+            app.ListBox_2.ValueChangedFcn = createCallbackFcn(app, @ListBox_2ValueChanged, true);
+            app.ListBox_2.BackgroundColor = [0.8235 1 0.9608];
+            app.ListBox_2.Position = [54 170 186 77];
+            app.ListBox_2.Value = {};
+
+            % Create ListBox_3
+            app.ListBox_3 = uilistbox(app.UIFigure);
+            app.ListBox_3.Items = {'Trapezoidal multiple', 'Simpson 3/8 multiple'};
+            app.ListBox_3.ValueChangedFcn = createCallbackFcn(app, @ListBox_3ValueChanged, true);
+            app.ListBox_3.BackgroundColor = [0.9137 0.7647 0.4941];
+            app.ListBox_3.Position = [54 204 186 43];
+            app.ListBox_3.Value = {};
+
+            % Create ListBox_4
+            app.ListBox_4 = uilistbox(app.UIFigure);
+            app.ListBox_4.Items = {'Euler', 'Clasico Runge-kutta'};
+            app.ListBox_4.ValueChangedFcn = createCallbackFcn(app, @ListBox_4ValueChanged, true);
+            app.ListBox_4.BackgroundColor = [0.9176 0.7882 1];
+            app.ListBox_4.Position = [54 193 186 41];
+            app.ListBox_4.Value = {};
+
+            % Create UIAxes
+            app.UIAxes = uiaxes(app.UIFigure);
+            title(app.UIAxes, 'Error')
+            xlabel(app.UIAxes, 'Iterations')
+            ylabel(app.UIAxes, 'Ea')
+            app.UIAxes.FontName = 'Arial Rounded MT Bold';
+            app.UIAxes.Box = 'on';
+            app.UIAxes.Color = [0.9059 0.9686 1];
+            app.UIAxes.XGrid = 'on';
+            app.UIAxes.YGrid = 'on';
+            app.UIAxes.Position = [258 23 360 224];
+
+            % Create EquationEditFieldLabel
+            app.EquationEditFieldLabel = uilabel(app.UIFigure);
+            app.EquationEditFieldLabel.HorizontalAlignment = 'right';
+            app.EquationEditFieldLabel.FontName = 'Arial Rounded MT Bold';
+            app.EquationEditFieldLabel.FontWeight = 'bold';
+            app.EquationEditFieldLabel.FontColor = [0 0.451 0.7412];
+            app.EquationEditFieldLabel.Position = [50 114 57 22];
+            app.EquationEditFieldLabel.Text = 'Equation';
+
+            % Create EquationEditField
+            app.EquationEditField = uieditfield(app.UIFigure, 'text');
+            app.EquationEditField.FontColor = [0 0.451 0.7412];
+            app.EquationEditField.Position = [122 114 118 22];
+
+            % Create RangeofIntervalLabel
+            app.RangeofIntervalLabel = uilabel(app.UIFigure);
+            app.RangeofIntervalLabel.FontName = 'Arial Rounded MT Bold';
+            app.RangeofIntervalLabel.FontWeight = 'bold';
+            app.RangeofIntervalLabel.FontColor = [0 0.451 0.7412];
+            app.RangeofIntervalLabel.Position = [95 85 103 22];
+            app.RangeofIntervalLabel.Text = 'Range of Interval';
+
+            % Create MinEditField_2Label
+            app.MinEditField_2Label = uilabel(app.UIFigure);
+            app.MinEditField_2Label.HorizontalAlignment = 'right';
+            app.MinEditField_2Label.FontName = 'Arial Rounded MT Bold';
+            app.MinEditField_2Label.FontWeight = 'bold';
+            app.MinEditField_2Label.FontColor = [0 0.451 0.7412];
+            app.MinEditField_2Label.Position = [51 64 26 22];
+            app.MinEditField_2Label.Text = 'Min';
+
+            % Create MinEditField_2
+            app.MinEditField_2 = uieditfield(app.UIFigure, 'numeric');
+            app.MinEditField_2.FontName = 'Arial Rounded MT Bold';
+            app.MinEditField_2.FontWeight = 'bold';
+            app.MinEditField_2.FontColor = [0 0.451 0.7412];
+            app.MinEditField_2.Position = [92 64 50 22];
+
+            % Create MaxEditField_2Label
+            app.MaxEditField_2Label = uilabel(app.UIFigure);
+            app.MaxEditField_2Label.HorizontalAlignment = 'right';
+            app.MaxEditField_2Label.FontName = 'Arial Rounded MT Bold';
+            app.MaxEditField_2Label.FontWeight = 'bold';
+            app.MaxEditField_2Label.FontColor = [0 0.451 0.7412];
+            app.MaxEditField_2Label.Position = [146 64 29 22];
+            app.MaxEditField_2Label.Text = 'Max';
+
+            % Create MaxEditField_2
+            app.MaxEditField_2 = uieditfield(app.UIFigure, 'numeric');
+            app.MaxEditField_2.FontName = 'Arial Rounded MT Bold';
+            app.MaxEditField_2.FontWeight = 'bold';
+            app.MaxEditField_2.FontColor = [0 0.451 0.7412];
+            app.MaxEditField_2.Position = [190 64 50 22];
+
+            % Create IterationsLabel
+            app.IterationsLabel = uilabel(app.UIFigure);
+            app.IterationsLabel.HorizontalAlignment = 'right';
+            app.IterationsLabel.FontName = 'Arial Rounded MT Bold';
+            app.IterationsLabel.FontWeight = 'bold';
+            app.IterationsLabel.FontColor = [0 0.451 0.7412];
+            app.IterationsLabel.Position = [51 23 60 22];
+            app.IterationsLabel.Text = 'Iterations';
+
+            % Create IterationsEditField
+            app.IterationsEditField = uieditfield(app.UIFigure, 'numeric');
+            app.IterationsEditField.FontName = 'Arial Rounded MT Bold';
+            app.IterationsEditField.FontWeight = 'bold';
+            app.IterationsEditField.FontColor = [0 0.451 0.7412];
+            app.IterationsEditField.Position = [126 23 114 22];
+
+            % Create NoofEquationsDropDownLabel
+            app.NoofEquationsDropDownLabel = uilabel(app.UIFigure);
+            app.NoofEquationsDropDownLabel.HorizontalAlignment = 'right';
+            app.NoofEquationsDropDownLabel.FontName = 'Arial';
+            app.NoofEquationsDropDownLabel.FontWeight = 'bold';
+            app.NoofEquationsDropDownLabel.FontColor = [0 0.451 0.7412];
+            app.NoofEquationsDropDownLabel.Visible = 'off';
+            app.NoofEquationsDropDownLabel.Position = [18 145 101 22];
+            app.NoofEquationsDropDownLabel.Text = 'No. of Equations';
+
+            % Create NoofEquationsDropDown
+            app.NoofEquationsDropDown = uidropdown(app.UIFigure);
+            app.NoofEquationsDropDown.Items = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+            app.NoofEquationsDropDown.Visible = 'off';
+            app.NoofEquationsDropDown.FontName = 'Arial';
+            app.NoofEquationsDropDown.FontWeight = 'bold';
+            app.NoofEquationsDropDown.FontColor = [0 0.451 0.7412];
+            app.NoofEquationsDropDown.Position = [122 145 118 22];
+            app.NoofEquationsDropDown.Value = '1';
+        end
+    end
+
+    methods (Access = public)
+
+        % Construct app
+        function app = methodSelector
+
+            % Create and configure components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            % Execute the startup function
+            runStartupFcn(app, @startupFcn)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
