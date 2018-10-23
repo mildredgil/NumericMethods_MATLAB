@@ -3,7 +3,7 @@ Scholar project using Matlab to show the solutions of numeric methods.
 
 ## Colaboradores
 
-Mildred
+Mildred Gil Melchor | A00820397
 
 Naomi Macias Honti | A01282098
 
