@@ -15,20 +15,25 @@ Ovidio Daniel Cantu Puente | A00818034
 
 - V1.1
  
- Hecho por Mildred. Base de la interface. Se agregan los botones, graficas y inputs. Sin modificacion a codigo.
+ Made by Mildred. Base of the interface. Buttons, graphs and inputs are added. Without modification to code.
  
 - V1.2
 
- Hecho por Sergio. Codigo para la animacion de los botones. Especifica de las listas segun el tipo de metodos seleccionado. Sin modificacion a interface.
+ Made by Sergio. Code for the animation of the buttons. Specify the lists according to the type of methods selected. Without modification to interface.
  
 - V1.3
 
- Hecho por Ovidio. Codigo para la animacion de las listas. Especificacion de los inputs segun lo que se requiera del metodo seleccionado. Sin modificacion a interface.
+ Made by Ovidio. Code for the animation of the lists. Specification of the inputs according to what is required of the selected method. Without modification to interface.
  
 - V1.4
 
- Hecho por Naomi. Codigo para la animacion de tablas. Creacion de tablas modificables para ingresar inputs, adabtable a la cantidad necesaria. Se agregan tablas y un spinner.
+ Made by Naomi. Code for the animation of tables. Creation of modifiable tables to input inputs, adabtable to the necessary amount. Tables and a spinner are added.
  
 - V1.5
 
- Hecho por Naomi. Conjunto de codigo convinado. Se junta el codigo de las versiones pasadas y es analizando para acomodarlo de la mejor manera. Se colocan comentarios, especificaciones y se resuelven errores. Se agrega un espacio para la respuesta y un boton para calcular.
+ Made by Naomi. Combined code set. The code of the past versions is put together and is analyzed to accommodate it in the best way. Comments, specifications are placed and errors are resolved. A space is added for the answer and a button to calculate.
+ 
+ 
+- V1.6
+
+ Made by Naomi. Unification of languages. Without modification to the code. Without modification to interface.
