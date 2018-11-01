@@ -7,9 +7,9 @@ Mildred Gil Melchor | A00820397
 
 Naomi Macias Honti | A01282098
 
-Sergio
+Sergio Caceres | A00821143
 
-Ovidio
+Ovidio Daniel Cantu Puente | A00818034
 
 ## Versiones
 
