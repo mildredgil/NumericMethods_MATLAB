@@ -11,7 +11,6 @@ function [varargout] = bisection(h, min, max, it)
 %Se calcula Ea con:
 %Ea = abs((Xr-Xrp)/Xr)*100
 %Se encuentra raiz cuando handle(Xr)=0 
-display(h);
 handle = matlabFunction(evalin(symengine, h));
 Xi = min;
 Xu = max;
@@ -46,18 +45,22 @@ while(continuar)
     end
     fprintf("\n");
     if(encontrado)
+        varargout{4} = 'Success!';
         fprintf('Se encontro una raiz en %.4f\n',Xr);
         fprintf('Con un valor aproximado de error de %.2f\n',Ea);
         continuar = false;
         fprintf('\n');
     else
         if(Xi==Xu)
+            varargout{4} = 'Try with other limits.';
             fprintf('No hay una raiz entre los limites recibidos');
             continuar = false;
             fprintf('\n');
         else
+            varargout{4} = 'Try with more iterations.';
             fprintf('Aun no se ha encontrado una raiz\n');
-            continuar = input('Desea refinar? [true/1 o false/0] ');
+            continuar = false;
+            fprintf('\n');
         end
     end
 end
