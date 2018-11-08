@@ -2,7 +2,7 @@ classdef methodSelector < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
-        UIFigure                        matlab.ui.Figure
+        NumiiSolveUIFigure              matlab.ui.Figure
         NumiiSolveLabel                 matlab.ui.control.Label
         MathproblemIdoitforyouLabel     matlab.ui.control.Label
         ChooseyourtypeofproblemButtonGroup  matlab.ui.container.ButtonGroup
@@ -14,7 +14,7 @@ classdef methodSelector < matlab.apps.AppBase
         ListBox_2                       matlab.ui.control.ListBox
         ListBox_3                       matlab.ui.control.ListBox
         ListBox_4                       matlab.ui.control.ListBox
-        UIAxes                          matlab.ui.control.UIAxes
+        uiAxesError                     matlab.ui.control.UIAxes
         EcuationEditField               matlab.ui.control.EditField
         RangeofIntervalLabel            matlab.ui.control.Label
         MinEditField_2Label             matlab.ui.control.Label
@@ -23,23 +23,26 @@ classdef methodSelector < matlab.apps.AppBase
         MaxEditField_2                  matlab.ui.control.NumericEditField
         IterationsLabel                 matlab.ui.control.Label
         IterationsEditField             matlab.ui.control.NumericEditField
-        CalculateButton                 matlab.ui.control.Button
-        RaizLabel                       matlab.ui.control.Label
-        Label                           matlab.ui.control.Label
+        EVALUALTEButton                 matlab.ui.control.Button
+        RootLabel                       matlab.ui.control.Label
+        Label_root                      matlab.ui.control.Label
         EaLabel                         matlab.ui.control.Label
-        Label_2                         matlab.ui.control.Label
+        Label_ea                        matlab.ui.control.Label
         EcuationxLabel                  matlab.ui.control.Label
-        UITable                         matlab.ui.control.Table
-        UITable2                        matlab.ui.control.Table
-        XSpinnerLabel                   matlab.ui.control.Label
-        XSpinner                        matlab.ui.control.Spinner
-        UITable3                        matlab.ui.control.Table
-        InitialvalueEditFieldLabel      matlab.ui.control.Label
-        InitialvalueEditField           matlab.ui.control.NumericEditField
+        XiSpinnerLabel                  matlab.ui.control.Label
+        XiSpinner                       matlab.ui.control.Spinner
+        InitialValueEditFieldLabel      matlab.ui.control.Label
+        InitialValueEditField           matlab.ui.control.NumericEditField
         DerivativeLabel                 matlab.ui.control.Label
         Label2                          matlab.ui.control.Label
-        AXLabel                         matlab.ui.control.Label
+        UITable3                        matlab.ui.control.Table
+        uiAxesFunction                  matlab.ui.control.UIAxes
+        MsgLabel                        matlab.ui.control.Label
+        Label_msg                       matlab.ui.control.Label
+        UITable2                        matlab.ui.control.Table
         BLabel                          matlab.ui.control.Label
+        AXLabel                         matlab.ui.control.Label
+        UITable                         matlab.ui.control.Table
     end
 
     
@@ -52,13 +55,18 @@ classdef methodSelector < matlab.apps.AppBase
             app.ListBox_2.Visible = false;
             app.ListBox.Visible = false;
             % Answer
-            app.Label.Visible = false;
-            app.Label_2.Visible = false;
-            app.RaizLabel.Visible = false;
+            app.Label_root.Visible = false;
+            app.Label_ea.Visible = false;
+            app.Label_msg.Visible = false;
+            app.RootLabel.Visible = false;
             app.EaLabel.Visible = false;
+            app.MsgLabel.Visible = false;
             % Graph
-            app.UIAxes.Visible = false;
-            % We need a way to delete the data from the graph
+            app.uiAxesError.Visible = false;
+            app.uiAxesFunction.Visible = false;
+            cla(app.uiAxesError);            
+            cla(app.uiAxesFunction);
+            title(app.uiAxesFunction, 'Function');
             % Tables
             app.UITable.Visible = false;
             app.UITable.Enable = 'on';
@@ -72,13 +80,13 @@ classdef methodSelector < matlab.apps.AppBase
             app.UITable.ColumnEditable = true;
             app.UITable2.ColumnEditable = true;
             % x#
-            app.XSpinner.Visible = false;
-            app.XSpinner.Value = 2;
-            app.XSpinnerLabel.Visible = false;
+            app.XiSpinner.Visible = false;
+            app.XiSpinner.Value = 2;
+            app.XiSpinnerLabel.Visible = false;
             % Initail value
-            app.InitialvalueEditFieldLabel.Visible = false;
-            app.InitialvalueEditField.Visible = false;
-            app.InitialvalueEditField.Value = 0;
+            app.InitialValueEditFieldLabel.Visible = false;
+            app.InitialValueEditField.Visible = false;
+            app.InitialValueEditField.Value = 0;
             % Ecuation
             app.EcuationEditField.Visible = false;
             app.EcuationxLabel.Visible = false;
@@ -100,6 +108,61 @@ classdef methodSelector < matlab.apps.AppBase
             app.Label2.Visible = false;
         end
         
+        function results = graphicate(app,min,max,h)
+            % Graph the function
+            title(app.uiAxesFunction, h);
+            handle = matlabFunction(evalin(symengine, h));
+            % Calculing the values
+            position = (max-min)/100;
+            x = min:position:max;
+            y = handle(x);
+            plot(app.uiAxesFunction,x,y);
+        end
+        
+        function [root, ea, EaR, msg] = bisection(app,h, min, max, it)
+            % Parameters: app, handle, min, max, #iteretions
+            handle = matlabFunction(evalin(symengine, h));
+            Xi = min;
+            Xu = max;
+            continuar = true;
+            encontrado = false;
+            while(continuar)
+                iteraciones = it;
+                contador = 1;
+                ea = 0;
+                EaR=[];
+                while(contador <= iteraciones)
+                    Xr = (Xi+Xu)/2;
+                    if(contador>1)
+                        ea = abs((Xr-ea)/Xr)*100;
+                        EaR = [EaR ea];
+                    end
+                    if(round(handle(Xr),4)== 0)
+                        root = Xr;
+                        contador = iteraciones;
+                        encontrado = true;
+                        msg = 'Success!';
+                        continuar = false;
+                    elseif(handle(Xr)*handle(Xi) < 0)
+                        Xu = Xr;
+                    elseif(handle(Xr)*handle(Xi) > 0)
+                        Xi = Xr;
+                    end
+                    ea = Xr;
+                    contador=contador+1;
+                end
+                if(~encontrado)
+                    root = Xr;
+                    if(Xi==Xu)
+                        msg = 'Try with other limits.';
+                        continuar = false;
+                    else
+                        msg = 'Try with more iterations.';
+                        continuar = false;
+                    end
+                end
+            end
+        end
     end
     
 
@@ -111,7 +174,6 @@ classdef methodSelector < matlab.apps.AppBase
             % by default is selected Nolinearequation and Biseccion
             app.ListBox_2.Value = "Bisection";
             app.ListBox_2.Visible = true;
-            app.UIAxes.Visible = true;
             % Ecuation
             app.EcuationEditField.Visible = true;
             app.EcuationxLabel.Visible = true;
@@ -125,7 +187,8 @@ classdef methodSelector < matlab.apps.AppBase
             app.IterationsLabel.Visible = true;
             app.IterationsEditField.Visible = true;
             % Graph
-            app.UIAxes.Visible = true;
+            app.uiAxesError.Visible = true;
+            app.uiAxesFunction.Visible = true;
         end
 
         % Selection changed function: 
@@ -154,7 +217,8 @@ classdef methodSelector < matlab.apps.AppBase
                     app.IterationsLabel.Visible = true;
                     app.IterationsEditField.Visible = true;
                     % Graph
-                    app.UIAxes.Visible = true;
+                    app.uiAxesError.Visible = true;
+                    app.uiAxesFunction.Visible = true;
                 case app.NumericalintegrationButton_2
                     app.ListBox_3.Visible=true;
                     % by default is selected Trapezoidal multiple
@@ -174,8 +238,10 @@ classdef methodSelector < matlab.apps.AppBase
                     app.IterationsLabel.Visible = true;
                     app.IterationsEditField.Visible = true;
                     % x#
-                    app.XSpinner.Visible = true;
-                    app.XSpinnerLabel.Visible = true;
+                    app.XiSpinner.Visible = true;
+                    app.XiSpinnerLabel.Visible = true;
+                    % Graph, only the Ea
+                    app.uiAxesError.Visible = true;
                 case app.DiferentialequationsystemButton_2
                     app.ListBox_4.Visible=true;
                     % by default is selected Euler
@@ -215,8 +281,8 @@ classdef methodSelector < matlab.apps.AppBase
             app.IterationsLabel.Visible = true;
             app.IterationsEditField.Visible = true;
             % x#
-            app.XSpinner.Visible = true;
-            app.XSpinnerLabel.Visible = true;
+            app.XiSpinner.Visible = true;
+            app.XiSpinnerLabel.Visible = true;
             % objects of each function
             if(value == "Gauss-Seidel")
                 %
@@ -239,10 +305,11 @@ classdef methodSelector < matlab.apps.AppBase
             app.IterationsLabel.Visible = true;
             app.IterationsEditField.Visible = true;
             % Graph
-            app.UIAxes.Visible = true;
+            app.uiAxesError.Visible = true;
+            app.uiAxesFunction.Visible = true;
             % objects of each function
             if(value == "Bisection" || value == "Regular Falsi")
-                % Range
+                % Ranges
                 app.MaxEditField_2.Visible = true;
                 app.MaxEditField_2Label.Visible = true;
                 app.MinEditField_2Label.Visible = true;
@@ -250,12 +317,12 @@ classdef methodSelector < matlab.apps.AppBase
                 app.RangeofIntervalLabel.Visible = true;
             elseif(value == "Simple Iteration fix point")
                 % Initial value
-                app.InitialvalueEditFieldLabel.Visible = true;
-                app.InitialvalueEditField.Visible = true;
+                app.InitialValueEditFieldLabel.Visible = true;
+                app.InitialValueEditField.Visible = true;
             elseif(value =="Newton- Raphson")
                 % Initial value
-                app.InitialvalueEditFieldLabel.Visible = true;
-                app.InitialvalueEditField.Visible = true;
+                app.InitialValueEditFieldLabel.Visible = true;
+                app.InitialValueEditField.Visible = true;
                 % Derivative
                 app.DerivativeLabel.Visible = true;
             end
@@ -276,14 +343,35 @@ classdef methodSelector < matlab.apps.AppBase
             end
         end
 
-        % Button pushed function: CalculateButton
-        function CalculateButtonPushed(app, event)
-            % It is assumed that the values entered are valid
+        % Button pushed function: EVALUALTEButton
+        function EVALUALTEButtonPushed(app, event)
+           % It is assumed that the values entered are valid
             switch(app.ChooseyourtypeofproblemButtonGroup.SelectedObject)
                 case app.NolinearequationButton_2
                     switch(app.ListBox_2.Value)
                         case "Bisection"
-                            %
+                            % Get the input values
+                            handle = app.EcuationEditField.Value;
+                            max = app.MaxEditField_2.Value;
+                            min = app.MinEditField_2.Value;
+                            ite = app.IterationsEditField.Value;
+                            % Call the function
+                            [root, ea, Ea, msg] = bisection(app,handle,min,max,ite);
+                            % Graph the Ea
+                            plot(app.uiAxesError,Ea);
+                            % Graph the function
+                            graphicate(app,min,max,handle);
+                            % Appear the Ea, Root, Msg 
+                            app.EaLabel.Visible = true;
+                            app.RootLabel.Visible = true;
+                            app.MsgLabel.Visible = true;
+                            app.Label_root.Visible = true;
+                            app.Label_ea.Visible = true;
+                            app.Label_msg.Visible = true;
+                            % Show the data
+                            app.Label_root.Text = num2str(root,'%4.5f');
+                            app.Label_ea.Text = num2str(ea,'%4.5f');
+                            app.Label_msg.Text = msg;
                         case "Regular Falsi"
                             %
                         case "Simple Iteration fix point"
@@ -301,7 +389,7 @@ classdef methodSelector < matlab.apps.AppBase
                 case app.NolinearequationsystemButton_2
                     switch(app.ListBox.Value)
                         case "Gauss-Seidel"
-                            % missing code
+                            %
                         case "Newton-Raphson"
                             % missing code
                     end
@@ -315,9 +403,9 @@ classdef methodSelector < matlab.apps.AppBase
             end
         end
 
-        % Value changed function: XSpinner
-        function XSpinnerValueChanged(app, event)
-            value = app.XSpinner.Value;
+        % Value changed function: XiSpinner
+        function XiSpinnerValueChanged(app, event)
+            value = app.XiSpinner.Value;
             % each time the value is changed, the tables are updated
             app.UITable.Data = zeros(value);
             app.UITable2.Data = zeros(value,1);
@@ -330,42 +418,42 @@ classdef methodSelector < matlab.apps.AppBase
         % Create UIFigure and components
         function createComponents(app)
 
-            % Create UIFigure
-            app.UIFigure = uifigure;
-            app.UIFigure.Color = [0.8078 0.9098 0.9686];
-            app.UIFigure.Position = [100 100 661 532];
-            app.UIFigure.Name = 'UI Figure';
+            % Create NumiiSolveUIFigure
+            app.NumiiSolveUIFigure = uifigure;
+            app.NumiiSolveUIFigure.Color = [0.8078 0.9098 0.9686];
+            app.NumiiSolveUIFigure.Position = [100 100 967 532];
+            app.NumiiSolveUIFigure.Name = 'Numii Solve';
 
             % Create NumiiSolveLabel
-            app.NumiiSolveLabel = uilabel(app.UIFigure);
+            app.NumiiSolveLabel = uilabel(app.NumiiSolveUIFigure);
             app.NumiiSolveLabel.FontName = 'Georgia';
             app.NumiiSolveLabel.FontSize = 36;
             app.NumiiSolveLabel.FontWeight = 'bold';
-            app.NumiiSolveLabel.Position = [219 454 233 45];
+            app.NumiiSolveLabel.Position = [414 463 233 45];
             app.NumiiSolveLabel.Text = 'Numii Solve';
 
             % Create MathproblemIdoitforyouLabel
-            app.MathproblemIdoitforyouLabel = uilabel(app.UIFigure);
+            app.MathproblemIdoitforyouLabel = uilabel(app.NumiiSolveUIFigure);
             app.MathproblemIdoitforyouLabel.FontName = 'Berlin Sans FB';
-            app.MathproblemIdoitforyouLabel.Position = [370 433 154 22];
+            app.MathproblemIdoitforyouLabel.Position = [571 442 154 22];
             app.MathproblemIdoitforyouLabel.Text = 'Math problem? I do it for you!';
 
             % Create ChooseyourtypeofproblemButtonGroup
-            app.ChooseyourtypeofproblemButtonGroup = uibuttongroup(app.UIFigure);
+            app.ChooseyourtypeofproblemButtonGroup = uibuttongroup(app.NumiiSolveUIFigure);
             app.ChooseyourtypeofproblemButtonGroup.SelectionChangedFcn = createCallbackFcn(app, @ChooseyourtypeofproblemButtonGroupSelectionChanged, true);
             app.ChooseyourtypeofproblemButtonGroup.ForegroundColor = [0 0.451 0.7412];
             app.ChooseyourtypeofproblemButtonGroup.Title = 'Choose your type of problem:';
             app.ChooseyourtypeofproblemButtonGroup.BackgroundColor = [1 1 1];
             app.ChooseyourtypeofproblemButtonGroup.FontName = 'Arial Rounded MT Bold';
             app.ChooseyourtypeofproblemButtonGroup.FontWeight = 'bold';
-            app.ChooseyourtypeofproblemButtonGroup.Position = [53 312 565 104];
+            app.ChooseyourtypeofproblemButtonGroup.Position = [22 350 743 77];
 
             % Create NolinearequationButton_2
             app.NolinearequationButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
             app.NolinearequationButton_2.Text = 'No linear equation';
             app.NolinearequationButton_2.BackgroundColor = [0.8235 1 0.9608];
             app.NolinearequationButton_2.FontName = 'Cambria';
-            app.NolinearequationButton_2.Position = [53 51 170 22];
+            app.NolinearequationButton_2.Position = [10 24 170 22];
             app.NolinearequationButton_2.Value = true;
 
             % Create NumericalintegrationButton_2
@@ -373,257 +461,287 @@ classdef methodSelector < matlab.apps.AppBase
             app.NumericalintegrationButton_2.Text = 'Numerical integration';
             app.NumericalintegrationButton_2.BackgroundColor = [0.9137 0.7647 0.4941];
             app.NumericalintegrationButton_2.FontName = 'Cambria';
-            app.NumericalintegrationButton_2.Position = [341 51 170 22];
+            app.NumericalintegrationButton_2.Position = [377 24 170 22];
 
             % Create NolinearequationsystemButton_2
             app.NolinearequationsystemButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
             app.NolinearequationsystemButton_2.Text = 'No linear equation system';
             app.NolinearequationsystemButton_2.BackgroundColor = [1 1 0.7843];
             app.NolinearequationsystemButton_2.FontName = 'Cambria';
-            app.NolinearequationsystemButton_2.Position = [53 15 170 22];
+            app.NolinearequationsystemButton_2.Position = [195 24 170 22];
 
             % Create DiferentialequationsystemButton_2
             app.DiferentialequationsystemButton_2 = uitogglebutton(app.ChooseyourtypeofproblemButtonGroup);
             app.DiferentialequationsystemButton_2.Text = 'Diferential equation system';
             app.DiferentialequationsystemButton_2.BackgroundColor = [0.9176 0.7882 1];
             app.DiferentialequationsystemButton_2.FontName = 'Cambria';
-            app.DiferentialequationsystemButton_2.Position = [341 15 170 22];
+            app.DiferentialequationsystemButton_2.Position = [565 24 170 22];
 
             % Create ListBox
-            app.ListBox = uilistbox(app.UIFigure);
+            app.ListBox = uilistbox(app.NumiiSolveUIFigure);
             app.ListBox.Items = {'Gauss-Seidel', 'Newton-Raphson'};
             app.ListBox.ValueChangedFcn = createCallbackFcn(app, @ListBoxValueChanged, true);
             app.ListBox.BackgroundColor = [1 1 0.7843];
-            app.ListBox.Position = [54 256 186 38];
+            app.ListBox.Position = [783 389 158 38];
             app.ListBox.Value = 'Newton-Raphson';
 
             % Create ListBox_2
-            app.ListBox_2 = uilistbox(app.UIFigure);
+            app.ListBox_2 = uilistbox(app.NumiiSolveUIFigure);
             app.ListBox_2.Items = {'Bisection', 'Regular Falsi', 'Simple Iteration fix point', 'Newton- Raphson'};
             app.ListBox_2.ValueChangedFcn = createCallbackFcn(app, @ListBox_2ValueChanged, true);
             app.ListBox_2.BackgroundColor = [0.8235 1 0.9608];
-            app.ListBox_2.Position = [54 217 186 77];
+            app.ListBox_2.Position = [783 350 158 77];
             app.ListBox_2.Value = 'Bisection';
 
             % Create ListBox_3
-            app.ListBox_3 = uilistbox(app.UIFigure);
+            app.ListBox_3 = uilistbox(app.NumiiSolveUIFigure);
             app.ListBox_3.Items = {'Trapezoidal multiple', 'Simpson 3/8 multiple'};
             app.ListBox_3.ValueChangedFcn = createCallbackFcn(app, @ListBox_3ValueChanged, true);
             app.ListBox_3.BackgroundColor = [0.9137 0.7647 0.4941];
-            app.ListBox_3.Position = [54 251 186 43];
+            app.ListBox_3.Position = [783 384 158 43];
             app.ListBox_3.Value = 'Trapezoidal multiple';
 
             % Create ListBox_4
-            app.ListBox_4 = uilistbox(app.UIFigure);
+            app.ListBox_4 = uilistbox(app.NumiiSolveUIFigure);
             app.ListBox_4.Items = {'Euler', 'Clasico Runge-kutta'};
             app.ListBox_4.ValueChangedFcn = createCallbackFcn(app, @ListBox_4ValueChanged, true);
             app.ListBox_4.BackgroundColor = [0.9176 0.7882 1];
-            app.ListBox_4.Position = [54 253 186 41];
+            app.ListBox_4.Position = [783 386 158 41];
             app.ListBox_4.Value = 'Euler';
 
-            % Create UIAxes
-            app.UIAxes = uiaxes(app.UIFigure);
-            title(app.UIAxes, 'Error')
-            xlabel(app.UIAxes, 'Iterations')
-            ylabel(app.UIAxes, 'Ea')
-            app.UIAxes.FontName = 'Arial Rounded MT Bold';
-            app.UIAxes.Box = 'on';
-            app.UIAxes.Color = [0.9059 0.9686 1];
-            app.UIAxes.XGrid = 'on';
-            app.UIAxes.YGrid = 'on';
-            app.UIAxes.Position = [254 70 381 224];
+            % Create uiAxesError
+            app.uiAxesError = uiaxes(app.NumiiSolveUIFigure);
+            title(app.uiAxesError, 'Error')
+            xlabel(app.uiAxesError, 'Iterations')
+            ylabel(app.uiAxesError, 'Ea')
+            app.uiAxesError.FontName = 'Arial Rounded MT Bold';
+            app.uiAxesError.Box = 'on';
+            app.uiAxesError.Color = [0.9098 0.9686 1];
+            app.uiAxesError.XGrid = 'on';
+            app.uiAxesError.YGrid = 'on';
+            app.uiAxesError.Position = [576 30 365 224];
 
             % Create EcuationEditField
-            app.EcuationEditField = uieditfield(app.UIFigure, 'text');
+            app.EcuationEditField = uieditfield(app.NumiiSolveUIFigure, 'text');
             app.EcuationEditField.FontWeight = 'bold';
             app.EcuationEditField.FontColor = [0 0.451 0.7412];
-            app.EcuationEditField.Position = [122 171 118 22];
+            app.EcuationEditField.Position = [158 308 140 22];
 
             % Create RangeofIntervalLabel
-            app.RangeofIntervalLabel = uilabel(app.UIFigure);
+            app.RangeofIntervalLabel = uilabel(app.NumiiSolveUIFigure);
             app.RangeofIntervalLabel.FontName = 'Arial Rounded MT Bold';
             app.RangeofIntervalLabel.FontWeight = 'bold';
             app.RangeofIntervalLabel.FontColor = [0 0.451 0.7412];
-            app.RangeofIntervalLabel.Position = [95 132 103 22];
+            app.RangeofIntervalLabel.Position = [409 329 103 22];
             app.RangeofIntervalLabel.Text = 'Range of Interval';
 
             % Create MinEditField_2Label
-            app.MinEditField_2Label = uilabel(app.UIFigure);
-            app.MinEditField_2Label.HorizontalAlignment = 'right';
+            app.MinEditField_2Label = uilabel(app.NumiiSolveUIFigure);
             app.MinEditField_2Label.FontName = 'Arial Rounded MT Bold';
             app.MinEditField_2Label.FontWeight = 'bold';
             app.MinEditField_2Label.FontColor = [0 0.451 0.7412];
-            app.MinEditField_2Label.Position = [51 111 26 22];
+            app.MinEditField_2Label.Position = [366 308 26 22];
             app.MinEditField_2Label.Text = 'Min';
 
             % Create MinEditField_2
-            app.MinEditField_2 = uieditfield(app.UIFigure, 'numeric');
+            app.MinEditField_2 = uieditfield(app.NumiiSolveUIFigure, 'numeric');
             app.MinEditField_2.FontName = 'Arial Rounded MT Bold';
             app.MinEditField_2.FontWeight = 'bold';
             app.MinEditField_2.FontColor = [0 0.451 0.7412];
-            app.MinEditField_2.Position = [92 111 50 22];
+            app.MinEditField_2.Position = [392 308 53 22];
 
             % Create MaxEditField_2Label
-            app.MaxEditField_2Label = uilabel(app.UIFigure);
-            app.MaxEditField_2Label.HorizontalAlignment = 'right';
+            app.MaxEditField_2Label = uilabel(app.NumiiSolveUIFigure);
             app.MaxEditField_2Label.FontName = 'Arial Rounded MT Bold';
             app.MaxEditField_2Label.FontWeight = 'bold';
             app.MaxEditField_2Label.FontColor = [0 0.451 0.7412];
-            app.MaxEditField_2Label.Position = [146 111 29 22];
+            app.MaxEditField_2Label.Position = [469 308 29 22];
             app.MaxEditField_2Label.Text = 'Max';
 
             % Create MaxEditField_2
-            app.MaxEditField_2 = uieditfield(app.UIFigure, 'numeric');
+            app.MaxEditField_2 = uieditfield(app.NumiiSolveUIFigure, 'numeric');
             app.MaxEditField_2.FontName = 'Arial Rounded MT Bold';
             app.MaxEditField_2.FontWeight = 'bold';
             app.MaxEditField_2.FontColor = [0 0.451 0.7412];
-            app.MaxEditField_2.Position = [190 111 50 22];
+            app.MaxEditField_2.Position = [497 308 51 22];
 
             % Create IterationsLabel
-            app.IterationsLabel = uilabel(app.UIFigure);
-            app.IterationsLabel.HorizontalAlignment = 'right';
+            app.IterationsLabel = uilabel(app.NumiiSolveUIFigure);
             app.IterationsLabel.FontName = 'Arial Rounded MT Bold';
             app.IterationsLabel.FontWeight = 'bold';
             app.IterationsLabel.FontColor = [0 0.451 0.7412];
-            app.IterationsLabel.Position = [51 70 60 22];
+            app.IterationsLabel.Position = [618 308 60 22];
             app.IterationsLabel.Text = 'Iterations';
 
             % Create IterationsEditField
-            app.IterationsEditField = uieditfield(app.UIFigure, 'numeric');
+            app.IterationsEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
             app.IterationsEditField.Limits = [1 Inf];
             app.IterationsEditField.FontName = 'Arial Rounded MT Bold';
             app.IterationsEditField.FontWeight = 'bold';
             app.IterationsEditField.FontColor = [0 0.451 0.7412];
-            app.IterationsEditField.Position = [126 70 114 22];
+            app.IterationsEditField.Position = [685 308 91 22];
             app.IterationsEditField.Value = 1;
 
-            % Create CalculateButton
-            app.CalculateButton = uibutton(app.UIFigure, 'push');
-            app.CalculateButton.ButtonPushedFcn = createCallbackFcn(app, @CalculateButtonPushed, true);
-            app.CalculateButton.Position = [106 24 100 22];
-            app.CalculateButton.Text = 'Calculate';
+            % Create EVALUALTEButton
+            app.EVALUALTEButton = uibutton(app.NumiiSolveUIFigure, 'push');
+            app.EVALUALTEButton.ButtonPushedFcn = createCallbackFcn(app, @EVALUALTEButtonPushed, true);
+            app.EVALUALTEButton.BackgroundColor = [0.4706 0.6706 0.1882];
+            app.EVALUALTEButton.FontName = 'Yu Gothic';
+            app.EVALUALTEButton.FontWeight = 'bold';
+            app.EVALUALTEButton.FontColor = [1 1 1];
+            app.EVALUALTEButton.Position = [431 262 100 28];
+            app.EVALUALTEButton.Text = 'EVALUALTE';
 
-            % Create RaizLabel
-            app.RaizLabel = uilabel(app.UIFigure);
-            app.RaizLabel.FontWeight = 'bold';
-            app.RaizLabel.FontColor = [0 0.451 0.7412];
-            app.RaizLabel.Position = [275 24 30 22];
-            app.RaizLabel.Text = 'Raiz';
+            % Create RootLabel
+            app.RootLabel = uilabel(app.NumiiSolveUIFigure);
+            app.RootLabel.FontWeight = 'bold';
+            app.RootLabel.FontColor = [0 0.451 0.7412];
+            app.RootLabel.Position = [407 156 33 22];
+            app.RootLabel.Text = 'Root';
 
-            % Create Label
-            app.Label = uilabel(app.UIFigure);
-            app.Label.FontSize = 18;
-            app.Label.FontWeight = 'bold';
-            app.Label.FontColor = [0.4902 0.1804 0.5608];
-            app.Label.Position = [311 24 52 22];
+            % Create Label_root
+            app.Label_root = uilabel(app.NumiiSolveUIFigure);
+            app.Label_root.FontName = 'Britannic Bold';
+            app.Label_root.FontSize = 14;
+            app.Label_root.FontWeight = 'bold';
+            app.Label_root.Position = [441 156 89 22];
+            app.Label_root.Text = '';
 
             % Create EaLabel
-            app.EaLabel = uilabel(app.UIFigure);
+            app.EaLabel = uilabel(app.NumiiSolveUIFigure);
             app.EaLabel.FontWeight = 'bold';
             app.EaLabel.FontColor = [0 0.451 0.7412];
-            app.EaLabel.Position = [468 24 25 22];
+            app.EaLabel.Position = [407 208 25 22];
             app.EaLabel.Text = 'Ea';
 
-            % Create Label_2
-            app.Label_2 = uilabel(app.UIFigure);
-            app.Label_2.FontSize = 18;
-            app.Label_2.FontWeight = 'bold';
-            app.Label_2.FontColor = [0.4902 0.1804 0.5608];
-            app.Label_2.Position = [504 24 52 22];
+            % Create Label_ea
+            app.Label_ea = uilabel(app.NumiiSolveUIFigure);
+            app.Label_ea.FontName = 'Britannic Bold';
+            app.Label_ea.FontSize = 14;
+            app.Label_ea.FontWeight = 'bold';
+            app.Label_ea.Position = [441 208 89 22];
+            app.Label_ea.Text = '';
 
             % Create EcuationxLabel
-            app.EcuationxLabel = uilabel(app.UIFigure);
+            app.EcuationxLabel = uilabel(app.NumiiSolveUIFigure);
             app.EcuationxLabel.FontName = 'Arial Rounded MT Bold';
             app.EcuationxLabel.FontWeight = 'bold';
             app.EcuationxLabel.FontColor = [0 0.451 0.7412];
-            app.EcuationxLabel.Position = [41 173 86 22];
+            app.EcuationxLabel.Position = [68 308 83 22];
             app.EcuationxLabel.Text = 'Ecuation @(x)';
 
-            % Create UITable
-            app.UITable = uitable(app.UIFigure);
-            app.UITable.ColumnName = '';
-            app.UITable.RowName = {};
-            app.UITable.ForegroundColor = [0 0.451 0.7412];
-            app.UITable.FontWeight = 'bold';
-            app.UITable.Position = [262 77 262 185];
+            % Create XiSpinnerLabel
+            app.XiSpinnerLabel = uilabel(app.NumiiSolveUIFigure);
+            app.XiSpinnerLabel.HorizontalAlignment = 'center';
+            app.XiSpinnerLabel.FontWeight = 'bold';
+            app.XiSpinnerLabel.FontColor = [0 0.451 0.7412];
+            app.XiSpinnerLabel.Position = [303 308 25 22];
+            app.XiSpinnerLabel.Text = 'Xi';
 
-            % Create UITable2
-            app.UITable2 = uitable(app.UIFigure);
-            app.UITable2.ColumnName = '';
-            app.UITable2.RowName = {};
-            app.UITable2.ForegroundColor = [0 0.451 0.7412];
-            app.UITable2.FontWeight = 'bold';
-            app.UITable2.Position = [529 77 99 185];
+            % Create XiSpinner
+            app.XiSpinner = uispinner(app.NumiiSolveUIFigure);
+            app.XiSpinner.Limits = [2 Inf];
+            app.XiSpinner.RoundFractionalValues = 'on';
+            app.XiSpinner.ValueDisplayFormat = '%11g';
+            app.XiSpinner.ValueChangedFcn = createCallbackFcn(app, @XiSpinnerValueChanged, true);
+            app.XiSpinner.FontWeight = 'bold';
+            app.XiSpinner.FontColor = [0 0.451 0.7412];
+            app.XiSpinner.Position = [325 308 61 22];
+            app.XiSpinner.Value = 2;
 
-            % Create XSpinnerLabel
-            app.XSpinnerLabel = uilabel(app.UIFigure);
-            app.XSpinnerLabel.HorizontalAlignment = 'right';
-            app.XSpinnerLabel.FontWeight = 'bold';
-            app.XSpinnerLabel.FontColor = [0 0.451 0.7412];
-            app.XSpinnerLabel.Position = [85 178 25 22];
-            app.XSpinnerLabel.Text = 'X';
+            % Create InitialValueEditFieldLabel
+            app.InitialValueEditFieldLabel = uilabel(app.NumiiSolveUIFigure);
+            app.InitialValueEditFieldLabel.FontWeight = 'bold';
+            app.InitialValueEditFieldLabel.FontColor = [0 0.451 0.7412];
+            app.InitialValueEditFieldLabel.Position = [391 308 72 22];
+            app.InitialValueEditFieldLabel.Text = 'Initial Value';
 
-            % Create XSpinner
-            app.XSpinner = uispinner(app.UIFigure);
-            app.XSpinner.Limits = [2 Inf];
-            app.XSpinner.RoundFractionalValues = 'on';
-            app.XSpinner.ValueDisplayFormat = '%11g';
-            app.XSpinner.ValueChangedFcn = createCallbackFcn(app, @XSpinnerValueChanged, true);
-            app.XSpinner.FontWeight = 'bold';
-            app.XSpinner.FontColor = [0 0.451 0.7412];
-            app.XSpinner.Position = [114 178 61 22];
-            app.XSpinner.Value = 2;
+            % Create InitialValueEditField
+            app.InitialValueEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
+            app.InitialValueEditField.FontWeight = 'bold';
+            app.InitialValueEditField.FontColor = [0 0.451 0.7412];
+            app.InitialValueEditField.Position = [473 312 76 18];
+
+            % Create DerivativeLabel
+            app.DerivativeLabel = uilabel(app.NumiiSolveUIFigure);
+            app.DerivativeLabel.FontWeight = 'bold';
+            app.DerivativeLabel.FontColor = [0 0.451 0.7412];
+            app.DerivativeLabel.Position = [407 64 63 22];
+            app.DerivativeLabel.Text = 'Derivative';
+
+            % Create Label2
+            app.Label2 = uilabel(app.NumiiSolveUIFigure);
+            app.Label2.Position = [476 64 54 22];
+            app.Label2.Text = 'Label2';
 
             % Create UITable3
-            app.UITable3 = uitable(app.UIFigure);
+            app.UITable3 = uitable(app.NumiiSolveUIFigure);
             app.UITable3.ColumnName = '';
             app.UITable3.RowName = {};
             app.UITable3.ForegroundColor = [0 0.451 0.7412];
             app.UITable3.FontWeight = 'bold';
-            app.UITable3.Position = [262 15 356 42];
+            app.UITable3.Position = [390 14 179 38];
 
-            % Create InitialvalueEditFieldLabel
-            app.InitialvalueEditFieldLabel = uilabel(app.UIFigure);
-            app.InitialvalueEditFieldLabel.HorizontalAlignment = 'right';
-            app.InitialvalueEditFieldLabel.FontWeight = 'bold';
-            app.InitialvalueEditFieldLabel.FontColor = [0 0.451 0.7412];
-            app.InitialvalueEditFieldLabel.Position = [54 106 71 22];
-            app.InitialvalueEditFieldLabel.Text = 'Initial value';
+            % Create uiAxesFunction
+            app.uiAxesFunction = uiaxes(app.NumiiSolveUIFigure);
+            title(app.uiAxesFunction, 'Function')
+            xlabel(app.uiAxesFunction, 'x')
+            ylabel(app.uiAxesFunction, 'f(x)')
+            app.uiAxesFunction.FontName = 'Arial Rounded MT Bold';
+            app.uiAxesFunction.Box = 'on';
+            app.uiAxesFunction.Color = [0.9098 0.9686 1];
+            app.uiAxesFunction.XGrid = 'on';
+            app.uiAxesFunction.YGrid = 'on';
+            app.uiAxesFunction.Position = [20 30 365 224];
 
-            % Create InitialvalueEditField
-            app.InitialvalueEditField = uieditfield(app.UIFigure, 'numeric');
-            app.InitialvalueEditField.FontWeight = 'bold';
-            app.InitialvalueEditField.FontColor = [0 0.451 0.7412];
-            app.InitialvalueEditField.Position = [140 106 100 22];
+            % Create MsgLabel
+            app.MsgLabel = uilabel(app.NumiiSolveUIFigure);
+            app.MsgLabel.FontWeight = 'bold';
+            app.MsgLabel.FontColor = [0 0.451 0.7412];
+            app.MsgLabel.Position = [407 109 29 22];
+            app.MsgLabel.Text = 'Msg';
 
-            % Create DerivativeLabel
-            app.DerivativeLabel = uilabel(app.UIFigure);
-            app.DerivativeLabel.FontWeight = 'bold';
-            app.DerivativeLabel.FontColor = [0 0.451 0.7412];
-            app.DerivativeLabel.Position = [32 141 63 22];
-            app.DerivativeLabel.Text = 'Derivative';
+            % Create Label_msg
+            app.Label_msg = uilabel(app.NumiiSolveUIFigure);
+            app.Label_msg.FontName = 'Britannic Bold';
+            app.Label_msg.FontSize = 10;
+            app.Label_msg.FontWeight = 'bold';
+            app.Label_msg.FontColor = [1 0 0];
+            app.Label_msg.Position = [441 109 118 22];
+            app.Label_msg.Text = '';
 
-            % Create Label2
-            app.Label2 = uilabel(app.UIFigure);
-            app.Label2.Position = [101 141 42 22];
-            app.Label2.Text = 'Label2';
+            % Create UITable2
+            app.UITable2 = uitable(app.NumiiSolveUIFigure);
+            app.UITable2.ColumnName = '';
+            app.UITable2.RowName = {};
+            app.UITable2.ForegroundColor = [0 0.451 0.7412];
+            app.UITable2.FontWeight = 'bold';
+            app.UITable2.Position = [297 43 82 186];
+
+            % Create BLabel
+            app.BLabel = uilabel(app.NumiiSolveUIFigure);
+            app.BLabel.FontSize = 16;
+            app.BLabel.FontWeight = 'bold';
+            app.BLabel.FontColor = [0 0.451 0.7412];
+            app.BLabel.Position = [329 228 17 22];
+            app.BLabel.Text = 'B';
 
             % Create AXLabel
-            app.AXLabel = uilabel(app.UIFigure);
+            app.AXLabel = uilabel(app.NumiiSolveUIFigure);
             app.AXLabel.HorizontalAlignment = 'center';
             app.AXLabel.FontSize = 16;
             app.AXLabel.FontWeight = 'bold';
             app.AXLabel.FontColor = [0 0.451 0.7412];
-            app.AXLabel.Position = [381 261 36 22];
+            app.AXLabel.Position = [143 228 36 22];
             app.AXLabel.Text = 'AX#';
 
-            % Create BLabel
-            app.BLabel = uilabel(app.UIFigure);
-            app.BLabel.FontSize = 16;
-            app.BLabel.FontWeight = 'bold';
-            app.BLabel.FontColor = [0 0.451 0.7412];
-            app.BLabel.Position = [571 261 17 22];
-            app.BLabel.Text = 'B';
+            % Create UITable
+            app.UITable = uitable(app.NumiiSolveUIFigure);
+            app.UITable.ColumnName = '';
+            app.UITable.RowName = {};
+            app.UITable.ForegroundColor = [0 0.451 0.7412];
+            app.UITable.FontWeight = 'bold';
+            app.UITable.Position = [29 43 264 187];
         end
     end
 
@@ -636,7 +754,7 @@ classdef methodSelector < matlab.apps.AppBase
             createComponents(app)
 
             % Register the app with App Designer
-            registerApp(app, app.UIFigure)
+            registerApp(app, app.NumiiSolveUIFigure)
 
             % Execute the startup function
             runStartupFcn(app, @startupFcn)
@@ -650,7 +768,7 @@ classdef methodSelector < matlab.apps.AppBase
         function delete(app)
 
             % Delete UIFigure when app is deleted
-            delete(app.UIFigure)
+            delete(app.NumiiSolveUIFigure)
         end
     end
 end
