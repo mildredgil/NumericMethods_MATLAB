@@ -37,3 +37,10 @@ Ovidio Daniel Cantu Puente | A00818034
 - V1.6
 
  Made by Naomi. Unification of languages. Without modification to the code. Without modification to interface.
+ 
+- V2.0
+ 
+ Made by Mildred. Organization of the interface and application of the bisection function. A graph that shows the function is added. Specification of the bisection function.
+ 
+- V2.0.1
+ Made by Naomi. Adaptation of versions. Correction of details in code and interface.
