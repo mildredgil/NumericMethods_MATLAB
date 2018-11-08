@@ -1,4 +1,4 @@
-classdef Naomi < matlab.apps.AppBase
+classdef methodSelector < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -23,7 +23,7 @@ classdef Naomi < matlab.apps.AppBase
         MaxEditField_2                  matlab.ui.control.NumericEditField
         IterationsLabel                 matlab.ui.control.Label
         IterationsEditField             matlab.ui.control.NumericEditField
-        CalcularButton                  matlab.ui.control.Button
+        CalculateButton                 matlab.ui.control.Button
         RaizLabel                       matlab.ui.control.Label
         Label                           matlab.ui.control.Label
         EaLabel                         matlab.ui.control.Label
@@ -34,9 +34,9 @@ classdef Naomi < matlab.apps.AppBase
         XSpinnerLabel                   matlab.ui.control.Label
         XSpinner                        matlab.ui.control.Spinner
         UITable3                        matlab.ui.control.Table
-        ValorinicialEditFieldLabel      matlab.ui.control.Label
-        ValorinicialEditField           matlab.ui.control.NumericEditField
-        DerivadaLabel                   matlab.ui.control.Label
+        InitialvalueEditFieldLabel      matlab.ui.control.Label
+        InitialvalueEditField           matlab.ui.control.NumericEditField
+        DerivativeLabel                 matlab.ui.control.Label
         Label2                          matlab.ui.control.Label
         AXLabel                         matlab.ui.control.Label
         BLabel                          matlab.ui.control.Label
@@ -46,20 +46,20 @@ classdef Naomi < matlab.apps.AppBase
     methods (Access = private)
         
         function results = func(app)
-            % Se hace desaparecer todo y los valores se reinician
+            % Everything disappears and the values are reset
             app.ListBox_4.Visible = false;
             app.ListBox_3.Visible = false;
             app.ListBox_2.Visible = false;
             app.ListBox.Visible = false;
-            % Respuesta
+            % Answer
             app.Label.Visible = false;
             app.Label_2.Visible = false;
             app.RaizLabel.Visible = false;
             app.EaLabel.Visible = false;
-            % Grafico
+            % Graph
             app.UIAxes.Visible = false;
-            % Falta una manera de borrar los datos de la grafica
-            % Tablas
+            % We need a way to delete the data from the graph
+            % Tables
             app.UITable.Visible = false;
             app.UITable.Enable = 'on';
             app.UITable.Data = zeros(2);
@@ -69,19 +69,21 @@ classdef Naomi < matlab.apps.AppBase
             app.UITable3.Visible = false;
             app.AXLabel.Visible = false;
             app.BLabel.Visible = false;
+            app.UITable.ColumnEditable = true;
+            app.UITable2.ColumnEditable = true;
             % x#
             app.XSpinner.Visible = false;
             app.XSpinner.Value = 2;
             app.XSpinnerLabel.Visible = false;
-            % Valor inicial
-            app.ValorinicialEditFieldLabel.Visible = false;
-            app.ValorinicialEditField.Visible = false;
-            app.ValorinicialEditField.Value = 0;
-            % Ecuacion
+            % Initail value
+            app.InitialvalueEditFieldLabel.Visible = false;
+            app.InitialvalueEditField.Visible = false;
+            app.InitialvalueEditField.Value = 0;
+            % Ecuation
             app.EcuationEditField.Visible = false;
             app.EcuationxLabel.Visible = false;
             app.EcuationEditField.Value = "";
-            % Rango
+            % Range
             app.MaxEditField_2.Visible = false;
             app.MaxEditField_2Label.Visible = false;
             app.MaxEditField_2.Value = 0;
@@ -89,12 +91,12 @@ classdef Naomi < matlab.apps.AppBase
             app.MinEditField_2.Visible = false;
             app.MinEditField_2.Value = 0;
             app.RangeofIntervalLabel.Visible = false;
-            % Iteraciones
+            % Iterations
             app.IterationsLabel.Visible = false;
             app.IterationsEditField.Visible = false;
             app.IterationsEditField.Value = 1;
-            % Derivada
-            app.DerivadaLabel.Visible = false;
+            % Derivative
+            app.DerivativeLabel.Visible = false;
             app.Label2.Visible = false;
         end
         
@@ -106,23 +108,23 @@ classdef Naomi < matlab.apps.AppBase
         % Code that executes after component creation
         function startupFcn(app)
             func(app);
-            % por default esta seleccionado Nolinearequation y Biseccion
+            % by default is selected Nolinearequation and Biseccion
             app.ListBox_2.Value = "Bisection";
             app.ListBox_2.Visible = true;
             app.UIAxes.Visible = true;
-            % Ecuacion
+            % Ecuation
             app.EcuationEditField.Visible = true;
             app.EcuationxLabel.Visible = true;
-            % Rango
+            % Range
             app.MaxEditField_2.Visible = true;
             app.MaxEditField_2Label.Visible = true;
             app.MinEditField_2Label.Visible = true;
             app.MinEditField_2.Visible = true;
             app.RangeofIntervalLabel.Visible = true;
-            % Iteraciones
+            % Iterations
             app.IterationsLabel.Visible = true;
             app.IterationsEditField.Visible = true;
-            % Grafico
+            % Graph
             app.UIAxes.Visible = true;
         end
 
@@ -130,45 +132,45 @@ classdef Naomi < matlab.apps.AppBase
         % ChooseyourtypeofproblemButtonGroup
         function ChooseyourtypeofproblemButtonGroupSelectionChanged(app, event)
             selectedButton = app.ChooseyourtypeofproblemButtonGroup.SelectedObject;
-            % Desaparece todo
+            % Everything disappears
             func(app);
-            % Aparece solo lo que se selecciona
+            % Only what is selected appears
             switch(selectedButton)
                 case app.NolinearequationButton_2
-                    % por default esta seleccionado Biseccion
+                    % by default is selected Biseccion
                     app.ListBox_2.Visible=true;
                     app.ListBox_2.Value = "Bisection";
-                    % objetos que necesita
-                    % Ecuacion
+                    % objects that it need
+                    % Ecuation
                     app.EcuationEditField.Visible = true;
                     app.EcuationxLabel.Visible = true;
-                    % Rango
+                    % Range
                     app.MaxEditField_2.Visible = true;
                     app.MaxEditField_2Label.Visible = true;
                     app.MinEditField_2Label.Visible = true;
                     app.MinEditField_2.Visible = true;
                     app.RangeofIntervalLabel.Visible = true;
-                    % Iteraciones
+                    % Iterations
                     app.IterationsLabel.Visible = true;
                     app.IterationsEditField.Visible = true;
-                    % Grafico
+                    % Graph
                     app.UIAxes.Visible = true;
                 case app.NumericalintegrationButton_2
                     app.ListBox_3.Visible=true;
-                    % por default esta Trapezoidal multiple
+                    % by default is selected Trapezoidal multiple
                     app.ListBox_3.Value = "Trapezoidal multiple";
-                    % falta codigo
+                    % missing code
                 case app.NolinearequationsystemButton_2
                     app.ListBox.Visible=true;
-                    % por default esta seleccionado Gauss-Seidel
+                    % by default is selected Gauss-Seidel
                     app.ListBox.Value = "Gauss-Seidel";
-                    % objetos que necesita
-                    % Tablas
+                    % objects that it need
+                    % Tables
                     app.UITable.Visible = true;
                     app.UITable2.Visible = true;
                     app.AXLabel.Visible = true;
                     app.BLabel.Visible = true;
-                    % Iteraciones
+                    % Iterations
                     app.IterationsLabel.Visible = true;
                     app.IterationsEditField.Visible = true;
                     % x#
@@ -176,142 +178,147 @@ classdef Naomi < matlab.apps.AppBase
                     app.XSpinnerLabel.Visible = true;
                 case app.DiferentialequationsystemButton_2
                     app.ListBox_4.Visible=true;
-                    % por default esta seleccionado Euler
+                    % by default is selected Euler
                     app.ListBox_4.Value = "Euler";
-                    % falta codigo
+                    % missing code
             end
         end
 
         % Value changed function: ListBox_4
         function ListBox_4ValueChanged(app, event)
             value = app.ListBox_4.Value;
-            % se vuelve a eliminar todo
+            % Everything disappears
             func(app);
-            % objetos que todas las funciones necesitan
+            % objects that all functions need
             app.ListBox_4.Visible = true;
-            % objetos de cada funcion
+            % objects of each function
             if(value == "Euler")
-                % falta codigo
+                % missing code
             elseif(value == "Clasico Runge-kutta")
-                % falta codigo
+                % missing code
             end
         end
 
         % Value changed function: ListBox
         function ListBoxValueChanged(app, event)
             value = app.ListBox.Value;
-            % se vuelve a eliminar todo
+            % Everything disappears
             func(app);
-            % objetos que todas las funciones necesitan
+            % objects that all functions need
             app.ListBox.Visible = true;
-            % Tablas
+            % Tables
             app.UITable.Visible = true;
             app.UITable2.Visible = true;
             app.AXLabel.Visible = true;
             app.BLabel.Visible = true;
-            % Iteraciones
+            % Iterations
             app.IterationsLabel.Visible = true;
             app.IterationsEditField.Visible = true;
             % x#
             app.XSpinner.Visible = true;
             app.XSpinnerLabel.Visible = true;
-            % objetos de cada funcion
+            % objects of each function
             if(value == "Gauss-Seidel")
                 %
             elseif(value == "Newton-Raphson")
-                % falta codigo
+                % missing code
             end
         end
 
         % Value changed function: ListBox_2
         function ListBox_2ValueChanged(app, event)
             value = app.ListBox_2.Value;
-            % se vuelve a eliminar todo
+            % Everything disappears
             func(app);
-            % objetos que todas las funciones necesitan
+            % objects that all functions need
             app.ListBox_2.Visible = true;
-            % Ecuacion
+            % Ecuation
             app.EcuationEditField.Visible = true;
             app.EcuationxLabel.Visible = true;
-            % Iteraciones
+            % Iterations
             app.IterationsLabel.Visible = true;
             app.IterationsEditField.Visible = true;
-            % Grafico
+            % Graph
             app.UIAxes.Visible = true;
-            % objetos de cada funcion
+            % objects of each function
             if(value == "Bisection" || value == "Regular Falsi")
-                % Rango
+                % Range
                 app.MaxEditField_2.Visible = true;
                 app.MaxEditField_2Label.Visible = true;
                 app.MinEditField_2Label.Visible = true;
                 app.MinEditField_2.Visible = true;
                 app.RangeofIntervalLabel.Visible = true;
             elseif(value == "Simple Iteration fix point")
-                % Valor inicial
-                app.ValorinicialEditFieldLabel.Visible = true;
-                app.ValorinicialEditField.Visible = true;
+                % Initial value
+                app.InitialvalueEditFieldLabel.Visible = true;
+                app.InitialvalueEditField.Visible = true;
             elseif(value =="Newton- Raphson")
-                % Valor inicial
-                app.ValorinicialEditFieldLabel.Visible = true;
-                app.ValorinicialEditField.Visible = true;
-                % Derivada
-                app.DerivadaLabel.Visible = true;
+                % Initial value
+                app.InitialvalueEditFieldLabel.Visible = true;
+                app.InitialvalueEditField.Visible = true;
+                % Derivative
+                app.DerivativeLabel.Visible = true;
             end
         end
 
         % Value changed function: ListBox_3
         function ListBox_3ValueChanged(app, event)
             value = app.ListBox_3.Value;
-            % se vuelve a eliminar todo
+            % Everything disappears
             func(app);
-            % objetos que todas las funciones necesitan
+            % objects that all functions need
             app.ListBox_3.Visible = true;
-            % objetos de cada funcion
+            % objects of each function
             if(value == "Trapezoidal multiple")
-                % falta codigo
+                % missing code
             elseif(value == "Simpson 3/8 multiple")
-                % falta codigo
+                % missing code
             end
         end
 
-        % Button pushed function: CalcularButton
-        function CalcularButtonPushed(app, event)
-            % Se asume que los valores ingresados son validos
+        % Button pushed function: CalculateButton
+        function CalculateButtonPushed(app, event)
+            % It is assumed that the values entered are valid
             switch(app.ChooseyourtypeofproblemButtonGroup.SelectedObject)
                 case app.NolinearequationButton_2
                     switch(app.ListBox_2.Value)
                         case "Bisection"
-                            
+                            %
                         case "Regular Falsi"
-                            
+                            %
                         case "Simple Iteration fix point"
-                            
+                            %
                         case "Newton- Raphson"
-                            
+                            %
                     end
                 case app.NumericalintegrationButton_2
                     switch(app.ListBox_3.Value)
                         case "Trapezoidal multiple"
-                            
+                            % missing code
                         case "Simpson 3/8 multiple"
-                            
+                            % missing code
                     end
                 case app.NolinearequationsystemButton_2
                     switch(app.ListBox.Value)
                         case "Gauss-Seidel"
-                            
+                            % missing code
                         case "Newton-Raphson"
-                            
+                            % missing code
                     end
                 case app.DiferentialequationsystemButton_2
-                    
+                    switch(app.ListBox_4.Value)
+                        case "Euler"
+                            % missing code
+                        case "Clasico Runge-kutta"
+                            % missing code
+                    end
             end
         end
 
         % Value changed function: XSpinner
         function XSpinnerValueChanged(app, event)
             value = app.XSpinner.Value;
-            % cada vez que se cambia el valor, se actualizan las tablas
+            % each time the value is changed, the tables are updated
             app.UITable.Data = zeros(value);
             app.UITable2.Data = zeros(value,1);
         end
@@ -490,11 +497,11 @@ classdef Naomi < matlab.apps.AppBase
             app.IterationsEditField.Position = [126 70 114 22];
             app.IterationsEditField.Value = 1;
 
-            % Create CalcularButton
-            app.CalcularButton = uibutton(app.UIFigure, 'push');
-            app.CalcularButton.ButtonPushedFcn = createCallbackFcn(app, @CalcularButtonPushed, true);
-            app.CalcularButton.Position = [106 24 100 22];
-            app.CalcularButton.Text = 'Calcular';
+            % Create CalculateButton
+            app.CalculateButton = uibutton(app.UIFigure, 'push');
+            app.CalculateButton.ButtonPushedFcn = createCallbackFcn(app, @CalculateButtonPushed, true);
+            app.CalculateButton.Position = [106 24 100 22];
+            app.CalculateButton.Text = 'Calculate';
 
             % Create RaizLabel
             app.RaizLabel = uilabel(app.UIFigure);
@@ -575,26 +582,26 @@ classdef Naomi < matlab.apps.AppBase
             app.UITable3.FontWeight = 'bold';
             app.UITable3.Position = [262 15 356 42];
 
-            % Create ValorinicialEditFieldLabel
-            app.ValorinicialEditFieldLabel = uilabel(app.UIFigure);
-            app.ValorinicialEditFieldLabel.HorizontalAlignment = 'right';
-            app.ValorinicialEditFieldLabel.FontWeight = 'bold';
-            app.ValorinicialEditFieldLabel.FontColor = [0 0.451 0.7412];
-            app.ValorinicialEditFieldLabel.Position = [53 106 72 22];
-            app.ValorinicialEditFieldLabel.Text = 'Valor inicial';
+            % Create InitialvalueEditFieldLabel
+            app.InitialvalueEditFieldLabel = uilabel(app.UIFigure);
+            app.InitialvalueEditFieldLabel.HorizontalAlignment = 'right';
+            app.InitialvalueEditFieldLabel.FontWeight = 'bold';
+            app.InitialvalueEditFieldLabel.FontColor = [0 0.451 0.7412];
+            app.InitialvalueEditFieldLabel.Position = [54 106 71 22];
+            app.InitialvalueEditFieldLabel.Text = 'Initial value';
 
-            % Create ValorinicialEditField
-            app.ValorinicialEditField = uieditfield(app.UIFigure, 'numeric');
-            app.ValorinicialEditField.FontWeight = 'bold';
-            app.ValorinicialEditField.FontColor = [0 0.451 0.7412];
-            app.ValorinicialEditField.Position = [140 106 100 22];
+            % Create InitialvalueEditField
+            app.InitialvalueEditField = uieditfield(app.UIFigure, 'numeric');
+            app.InitialvalueEditField.FontWeight = 'bold';
+            app.InitialvalueEditField.FontColor = [0 0.451 0.7412];
+            app.InitialvalueEditField.Position = [140 106 100 22];
 
-            % Create DerivadaLabel
-            app.DerivadaLabel = uilabel(app.UIFigure);
-            app.DerivadaLabel.FontWeight = 'bold';
-            app.DerivadaLabel.FontColor = [0 0.451 0.7412];
-            app.DerivadaLabel.Position = [32 141 56 22];
-            app.DerivadaLabel.Text = 'Derivada';
+            % Create DerivativeLabel
+            app.DerivativeLabel = uilabel(app.UIFigure);
+            app.DerivativeLabel.FontWeight = 'bold';
+            app.DerivativeLabel.FontColor = [0 0.451 0.7412];
+            app.DerivativeLabel.Position = [32 141 63 22];
+            app.DerivativeLabel.Text = 'Derivative';
 
             % Create Label2
             app.Label2 = uilabel(app.UIFigure);
@@ -623,7 +630,7 @@ classdef Naomi < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = Naomi
+        function app = methodSelector
 
             % Create and configure components
             createComponents(app)
