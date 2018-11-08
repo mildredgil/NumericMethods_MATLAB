@@ -22,15 +22,16 @@ while(continuar)
     fprintf('\n');
     contador = 1;
     Ea = 0;
-    varargout{2}=[];
+    varargout{3}=[];
     while(contador <= iteraciones)
         Xr = (Xi+Xu)/2;
         if(contador>1)
             Ea = abs((Xr-Ea)/Xr)*100;
-        end
-        varargout{2} = [Ea varargout{2}];
+            varargout{3} = [varargout{3} Ea];
+        end        
         if(round(handle(Xr),4)== 0)
-            varargout{1} = [Xr;Ea];
+            varargout{1} = Xr;
+            varargout{2} = Ea;
             contador = iteraciones;
             encontrado = true;
         elseif(handle(Xr)*handle(Xi) < 0)
