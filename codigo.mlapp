@@ -23,19 +23,14 @@ classdef methodSelector < matlab.apps.AppBase
         MaxEditField_2                  matlab.ui.control.NumericEditField
         IterationsLabel                 matlab.ui.control.Label
         IterationsEditField             matlab.ui.control.NumericEditField
-        EVALUALTEButton                 matlab.ui.control.Button
-        RootLabel                       matlab.ui.control.Label
-        Label_root                      matlab.ui.control.Label
-        EaLabel                         matlab.ui.control.Label
-        Label_ea                        matlab.ui.control.Label
+        EVALUATEButton                  matlab.ui.control.Button
         EcuationxLabel                  matlab.ui.control.Label
         XiSpinnerLabel                  matlab.ui.control.Label
         XiSpinner                       matlab.ui.control.Spinner
         InitialValueEditFieldLabel      matlab.ui.control.Label
         InitialValueEditField           matlab.ui.control.NumericEditField
-        DerivativeLabel                 matlab.ui.control.Label
+        fxLabel                         matlab.ui.control.Label
         Label2                          matlab.ui.control.Label
-        UITable3                        matlab.ui.control.Table
         uiAxesFunction                  matlab.ui.control.UIAxes
         MsgLabel                        matlab.ui.control.Label
         Label_msg                       matlab.ui.control.Label
@@ -43,6 +38,11 @@ classdef methodSelector < matlab.apps.AppBase
         BLabel                          matlab.ui.control.Label
         AXLabel                         matlab.ui.control.Label
         UITable                         matlab.ui.control.Table
+        RootLabel                       matlab.ui.control.Label
+        Label_root                      matlab.ui.control.Label
+        EaLabel                         matlab.ui.control.Label
+        Label_ea                        matlab.ui.control.Label
+        UITable3                        matlab.ui.control.Table
     end
 
     
@@ -62,6 +62,8 @@ classdef methodSelector < matlab.apps.AppBase
             app.EaLabel.Visible = false;
             app.MsgLabel.Visible = false;
             % Graph
+            app.uiAxesError.BackgroundColor = [0.8118 0.9098 0.9686];
+            app.uiAxesFunction.BackgroundColor = [0.8118 0.9098 0.9686];
             app.uiAxesError.Visible = false;
             app.uiAxesFunction.Visible = false;
             cla(app.uiAxesError);            
@@ -104,7 +106,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.IterationsEditField.Visible = false;
             app.IterationsEditField.Value = 1;
             % Derivative
-            app.DerivativeLabel.Visible = false;
+            app.fxLabel.Visible = false;
             app.Label2.Visible = false;
         end
         
@@ -116,9 +118,9 @@ classdef methodSelector < matlab.apps.AppBase
             position = (max-min)/100;
             x = min:position:max;
             y = handle(x);
-            plot(app.uiAxesFunction,x,y);
+            plot(app.uiAxesFunction,x,y,'Linewidth',2);
         end
-        
+       %{
         function [root, ea, EaR, msg] = bisection(app,h, min, max, it)
             % Parameters: app, handle, min, max, #iteretions
             handle = matlabFunction(evalin(symengine, h));
@@ -163,8 +165,9 @@ classdef methodSelector < matlab.apps.AppBase
                 end
             end
         end
-    end
     
+    %}     
+    end
 
     methods (Access = private)
 
@@ -324,7 +327,7 @@ classdef methodSelector < matlab.apps.AppBase
                 app.InitialValueEditFieldLabel.Visible = true;
                 app.InitialValueEditField.Visible = true;
                 % Derivative
-                app.DerivativeLabel.Visible = true;
+                app.fxLabel.Visible = true;
             end
         end
 
@@ -343,8 +346,8 @@ classdef methodSelector < matlab.apps.AppBase
             end
         end
 
-        % Button pushed function: EVALUALTEButton
-        function EVALUALTEButtonPushed(app, event)
+        % Button pushed function: EVALUATEButton
+        function EVALUATEButtonPushed(app, event)
            % It is assumed that the values entered are valid
             switch(app.ChooseyourtypeofproblemButtonGroup.SelectedObject)
                 case app.NolinearequationButton_2
@@ -352,15 +355,28 @@ classdef methodSelector < matlab.apps.AppBase
                         case "Bisection"
                             % Get the input values
                             handle = app.EcuationEditField.Value;
-                            max = app.MaxEditField_2.Value;
-                            min = app.MinEditField_2.Value;
+                            maxVal = app.MaxEditField_2.Value;
+                            minVal = app.MinEditField_2.Value;
                             ite = app.IterationsEditField.Value;
                             % Call the function
-                            [root, ea, Ea, msg] = bisection(app,handle,min,max,ite);
+                            [root, ea, Ea, msg] = bisection(handle,minVal,maxVal,ite);
+                            EaSize = size(Ea); 
                             % Graph the Ea
-                            plot(app.uiAxesError,Ea);
+                            xi = 1; 
+                            xn = EaSize(1,2);
+                            yi = min(Ea); 
+                            yn = max(Ea);
+                            plot(app.uiAxesError,Ea,'-o','Linewidth',2);
+                            if(xn <= 1)
+                                xn = inf;
+                                yi = 0;
+                                yn = inf;
+                            end
+                            display(ea);
+                            app.uiAxesError.XLim = [xi xn];                           
+                            app.uiAxesError.YLim = [yi yn];                           
                             % Graph the function
-                            graphicate(app,min,max,handle);
+                            graphicate(app,minVal,maxVal,handle);
                             % Appear the Ea, Root, Msg 
                             app.EaLabel.Visible = true;
                             app.RootLabel.Visible = true;
@@ -420,7 +436,7 @@ classdef methodSelector < matlab.apps.AppBase
 
             % Create NumiiSolveUIFigure
             app.NumiiSolveUIFigure = uifigure;
-            app.NumiiSolveUIFigure.Color = [0.8078 0.9098 0.9686];
+            app.NumiiSolveUIFigure.Color = [0.8118 0.9098 0.9686];
             app.NumiiSolveUIFigure.Position = [100 100 967 532];
             app.NumiiSolveUIFigure.Name = 'Numii Solve';
 
@@ -429,13 +445,13 @@ classdef methodSelector < matlab.apps.AppBase
             app.NumiiSolveLabel.FontName = 'Georgia';
             app.NumiiSolveLabel.FontSize = 36;
             app.NumiiSolveLabel.FontWeight = 'bold';
-            app.NumiiSolveLabel.Position = [414 463 233 45];
+            app.NumiiSolveLabel.Position = [364 463 233 45];
             app.NumiiSolveLabel.Text = 'Numii Solve';
 
             % Create MathproblemIdoitforyouLabel
             app.MathproblemIdoitforyouLabel = uilabel(app.NumiiSolveUIFigure);
             app.MathproblemIdoitforyouLabel.FontName = 'Berlin Sans FB';
-            app.MathproblemIdoitforyouLabel.Position = [571 442 154 22];
+            app.MathproblemIdoitforyouLabel.Position = [548 442 154 22];
             app.MathproblemIdoitforyouLabel.Text = 'Math problem? I do it for you!';
 
             % Create ChooseyourtypeofproblemButtonGroup
@@ -516,23 +532,22 @@ classdef methodSelector < matlab.apps.AppBase
             ylabel(app.uiAxesError, 'Ea')
             app.uiAxesError.FontName = 'Arial Rounded MT Bold';
             app.uiAxesError.Box = 'on';
-            app.uiAxesError.Color = [0.9098 0.9686 1];
             app.uiAxesError.XGrid = 'on';
             app.uiAxesError.YGrid = 'on';
-            app.uiAxesError.Position = [576 30 365 224];
+            app.uiAxesError.Position = [400 14 365 251];
 
             % Create EcuationEditField
             app.EcuationEditField = uieditfield(app.NumiiSolveUIFigure, 'text');
             app.EcuationEditField.FontWeight = 'bold';
             app.EcuationEditField.FontColor = [0 0.451 0.7412];
-            app.EcuationEditField.Position = [158 308 140 22];
+            app.EcuationEditField.Position = [111 287 219 28];
 
             % Create RangeofIntervalLabel
             app.RangeofIntervalLabel = uilabel(app.NumiiSolveUIFigure);
             app.RangeofIntervalLabel.FontName = 'Arial Rounded MT Bold';
             app.RangeofIntervalLabel.FontWeight = 'bold';
             app.RangeofIntervalLabel.FontColor = [0 0.451 0.7412];
-            app.RangeofIntervalLabel.Position = [409 329 103 22];
+            app.RangeofIntervalLabel.Position = [430 316 103 30];
             app.RangeofIntervalLabel.Text = 'Range of Interval';
 
             % Create MinEditField_2Label
@@ -540,7 +555,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.MinEditField_2Label.FontName = 'Arial Rounded MT Bold';
             app.MinEditField_2Label.FontWeight = 'bold';
             app.MinEditField_2Label.FontColor = [0 0.451 0.7412];
-            app.MinEditField_2Label.Position = [366 308 26 22];
+            app.MinEditField_2Label.Position = [373 285 26 30];
             app.MinEditField_2Label.Text = 'Min';
 
             % Create MinEditField_2
@@ -548,14 +563,14 @@ classdef methodSelector < matlab.apps.AppBase
             app.MinEditField_2.FontName = 'Arial Rounded MT Bold';
             app.MinEditField_2.FontWeight = 'bold';
             app.MinEditField_2.FontColor = [0 0.451 0.7412];
-            app.MinEditField_2.Position = [392 308 53 22];
+            app.MinEditField_2.Position = [397 287 71 28];
 
             % Create MaxEditField_2Label
             app.MaxEditField_2Label = uilabel(app.NumiiSolveUIFigure);
             app.MaxEditField_2Label.FontName = 'Arial Rounded MT Bold';
             app.MaxEditField_2Label.FontWeight = 'bold';
             app.MaxEditField_2Label.FontColor = [0 0.451 0.7412];
-            app.MaxEditField_2Label.Position = [469 308 29 22];
+            app.MaxEditField_2Label.Position = [477 286 29 30];
             app.MaxEditField_2Label.Text = 'Max';
 
             % Create MaxEditField_2
@@ -563,14 +578,14 @@ classdef methodSelector < matlab.apps.AppBase
             app.MaxEditField_2.FontName = 'Arial Rounded MT Bold';
             app.MaxEditField_2.FontWeight = 'bold';
             app.MaxEditField_2.FontColor = [0 0.451 0.7412];
-            app.MaxEditField_2.Position = [497 308 51 22];
+            app.MaxEditField_2.Position = [505 287 71 28];
 
             % Create IterationsLabel
             app.IterationsLabel = uilabel(app.NumiiSolveUIFigure);
             app.IterationsLabel.FontName = 'Arial Rounded MT Bold';
             app.IterationsLabel.FontWeight = 'bold';
             app.IterationsLabel.FontColor = [0 0.451 0.7412];
-            app.IterationsLabel.Position = [618 308 60 22];
+            app.IterationsLabel.Position = [609 291 60 22];
             app.IterationsLabel.Text = 'Iterations';
 
             % Create IterationsEditField
@@ -579,63 +594,32 @@ classdef methodSelector < matlab.apps.AppBase
             app.IterationsEditField.FontName = 'Arial Rounded MT Bold';
             app.IterationsEditField.FontWeight = 'bold';
             app.IterationsEditField.FontColor = [0 0.451 0.7412];
-            app.IterationsEditField.Position = [685 308 91 22];
+            app.IterationsEditField.Position = [676 288 89 28];
             app.IterationsEditField.Value = 1;
 
-            % Create EVALUALTEButton
-            app.EVALUALTEButton = uibutton(app.NumiiSolveUIFigure, 'push');
-            app.EVALUALTEButton.ButtonPushedFcn = createCallbackFcn(app, @EVALUALTEButtonPushed, true);
-            app.EVALUALTEButton.BackgroundColor = [0.4706 0.6706 0.1882];
-            app.EVALUALTEButton.FontName = 'Yu Gothic';
-            app.EVALUALTEButton.FontWeight = 'bold';
-            app.EVALUALTEButton.FontColor = [1 1 1];
-            app.EVALUALTEButton.Position = [431 262 100 28];
-            app.EVALUALTEButton.Text = 'EVALUALTE';
-
-            % Create RootLabel
-            app.RootLabel = uilabel(app.NumiiSolveUIFigure);
-            app.RootLabel.FontWeight = 'bold';
-            app.RootLabel.FontColor = [0 0.451 0.7412];
-            app.RootLabel.Position = [407 156 33 22];
-            app.RootLabel.Text = 'Root';
-
-            % Create Label_root
-            app.Label_root = uilabel(app.NumiiSolveUIFigure);
-            app.Label_root.FontName = 'Britannic Bold';
-            app.Label_root.FontSize = 14;
-            app.Label_root.FontWeight = 'bold';
-            app.Label_root.Position = [441 156 89 22];
-            app.Label_root.Text = '';
-
-            % Create EaLabel
-            app.EaLabel = uilabel(app.NumiiSolveUIFigure);
-            app.EaLabel.FontWeight = 'bold';
-            app.EaLabel.FontColor = [0 0.451 0.7412];
-            app.EaLabel.Position = [407 208 25 22];
-            app.EaLabel.Text = 'Ea';
-
-            % Create Label_ea
-            app.Label_ea = uilabel(app.NumiiSolveUIFigure);
-            app.Label_ea.FontName = 'Britannic Bold';
-            app.Label_ea.FontSize = 14;
-            app.Label_ea.FontWeight = 'bold';
-            app.Label_ea.Position = [441 208 89 22];
-            app.Label_ea.Text = '';
+            % Create EVALUATEButton
+            app.EVALUATEButton = uibutton(app.NumiiSolveUIFigure, 'push');
+            app.EVALUATEButton.ButtonPushedFcn = createCallbackFcn(app, @EVALUATEButtonPushed, true);
+            app.EVALUATEButton.BackgroundColor = [0.4706 0.6706 0.1882];
+            app.EVALUATEButton.FontName = 'Yu Gothic';
+            app.EVALUATEButton.FontWeight = 'bold';
+            app.EVALUATEButton.FontColor = [1 1 1];
+            app.EVALUATEButton.Position = [783 287 158 28];
+            app.EVALUATEButton.Text = 'EVALUATE';
 
             % Create EcuationxLabel
             app.EcuationxLabel = uilabel(app.NumiiSolveUIFigure);
             app.EcuationxLabel.FontName = 'Arial Rounded MT Bold';
             app.EcuationxLabel.FontWeight = 'bold';
             app.EcuationxLabel.FontColor = [0 0.451 0.7412];
-            app.EcuationxLabel.Position = [68 308 83 22];
+            app.EcuationxLabel.Position = [22 287 88 28];
             app.EcuationxLabel.Text = 'Ecuation @(x)';
 
             % Create XiSpinnerLabel
             app.XiSpinnerLabel = uilabel(app.NumiiSolveUIFigure);
-            app.XiSpinnerLabel.HorizontalAlignment = 'center';
             app.XiSpinnerLabel.FontWeight = 'bold';
             app.XiSpinnerLabel.FontColor = [0 0.451 0.7412];
-            app.XiSpinnerLabel.Position = [303 308 25 22];
+            app.XiSpinnerLabel.Position = [22 288 40 28];
             app.XiSpinnerLabel.Text = 'Xi';
 
             % Create XiSpinner
@@ -646,41 +630,34 @@ classdef methodSelector < matlab.apps.AppBase
             app.XiSpinner.ValueChangedFcn = createCallbackFcn(app, @XiSpinnerValueChanged, true);
             app.XiSpinner.FontWeight = 'bold';
             app.XiSpinner.FontColor = [0 0.451 0.7412];
-            app.XiSpinner.Position = [325 308 61 22];
+            app.XiSpinner.Position = [61 287 204 27];
             app.XiSpinner.Value = 2;
 
             % Create InitialValueEditFieldLabel
             app.InitialValueEditFieldLabel = uilabel(app.NumiiSolveUIFigure);
             app.InitialValueEditFieldLabel.FontWeight = 'bold';
             app.InitialValueEditFieldLabel.FontColor = [0 0.451 0.7412];
-            app.InitialValueEditFieldLabel.Position = [391 308 72 22];
+            app.InitialValueEditFieldLabel.Position = [373 285 127 32];
             app.InitialValueEditFieldLabel.Text = 'Initial Value';
 
             % Create InitialValueEditField
             app.InitialValueEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
             app.InitialValueEditField.FontWeight = 'bold';
             app.InitialValueEditField.FontColor = [0 0.451 0.7412];
-            app.InitialValueEditField.Position = [473 312 76 18];
+            app.InitialValueEditField.Position = [446 287 130 28];
 
-            % Create DerivativeLabel
-            app.DerivativeLabel = uilabel(app.NumiiSolveUIFigure);
-            app.DerivativeLabel.FontWeight = 'bold';
-            app.DerivativeLabel.FontColor = [0 0.451 0.7412];
-            app.DerivativeLabel.Position = [407 64 63 22];
-            app.DerivativeLabel.Text = 'Derivative';
+            % Create fxLabel
+            app.fxLabel = uilabel(app.NumiiSolveUIFigure);
+            app.fxLabel.FontWeight = 'bold';
+            app.fxLabel.FontColor = [0 0.451 0.7412];
+            app.fxLabel.Position = [783 42 40 22];
+            app.fxLabel.Text = 'f(x)'':';
 
             % Create Label2
             app.Label2 = uilabel(app.NumiiSolveUIFigure);
-            app.Label2.Position = [476 64 54 22];
+            app.Label2.HorizontalAlignment = 'right';
+            app.Label2.Position = [822 42 118 22];
             app.Label2.Text = 'Label2';
-
-            % Create UITable3
-            app.UITable3 = uitable(app.NumiiSolveUIFigure);
-            app.UITable3.ColumnName = '';
-            app.UITable3.RowName = {};
-            app.UITable3.ForegroundColor = [0 0.451 0.7412];
-            app.UITable3.FontWeight = 'bold';
-            app.UITable3.Position = [390 14 179 38];
 
             % Create uiAxesFunction
             app.uiAxesFunction = uiaxes(app.NumiiSolveUIFigure);
@@ -689,25 +666,26 @@ classdef methodSelector < matlab.apps.AppBase
             ylabel(app.uiAxesFunction, 'f(x)')
             app.uiAxesFunction.FontName = 'Arial Rounded MT Bold';
             app.uiAxesFunction.Box = 'on';
-            app.uiAxesFunction.Color = [0.9098 0.9686 1];
             app.uiAxesFunction.XGrid = 'on';
             app.uiAxesFunction.YGrid = 'on';
-            app.uiAxesFunction.Position = [20 30 365 224];
+            app.uiAxesFunction.Position = [20 14 365 251];
 
             % Create MsgLabel
             app.MsgLabel = uilabel(app.NumiiSolveUIFigure);
             app.MsgLabel.FontWeight = 'bold';
             app.MsgLabel.FontColor = [0 0.451 0.7412];
-            app.MsgLabel.Position = [407 109 29 22];
-            app.MsgLabel.Text = 'Msg';
+            app.MsgLabel.Position = [783 107 33 22];
+            app.MsgLabel.Text = 'Msg:';
 
             % Create Label_msg
             app.Label_msg = uilabel(app.NumiiSolveUIFigure);
+            app.Label_msg.HorizontalAlignment = 'right';
+            app.Label_msg.VerticalAlignment = 'top';
             app.Label_msg.FontName = 'Britannic Bold';
             app.Label_msg.FontSize = 10;
             app.Label_msg.FontWeight = 'bold';
             app.Label_msg.FontColor = [1 0 0];
-            app.Label_msg.Position = [441 109 118 22];
+            app.Label_msg.Position = [783 86 157 22];
             app.Label_msg.Text = '';
 
             % Create UITable2
@@ -716,14 +694,14 @@ classdef methodSelector < matlab.apps.AppBase
             app.UITable2.RowName = {};
             app.UITable2.ForegroundColor = [0 0.451 0.7412];
             app.UITable2.FontWeight = 'bold';
-            app.UITable2.Position = [297 43 82 186];
+            app.UITable2.Position = [303 30 82 214];
 
             % Create BLabel
             app.BLabel = uilabel(app.NumiiSolveUIFigure);
             app.BLabel.FontSize = 16;
             app.BLabel.FontWeight = 'bold';
             app.BLabel.FontColor = [0 0.451 0.7412];
-            app.BLabel.Position = [329 228 17 22];
+            app.BLabel.Position = [324 243 17 22];
             app.BLabel.Text = 'B';
 
             % Create AXLabel
@@ -732,7 +710,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.AXLabel.FontSize = 16;
             app.AXLabel.FontWeight = 'bold';
             app.AXLabel.FontColor = [0 0.451 0.7412];
-            app.AXLabel.Position = [143 228 36 22];
+            app.AXLabel.Position = [138 243 36 22];
             app.AXLabel.Text = 'AX#';
 
             % Create UITable
@@ -741,7 +719,49 @@ classdef methodSelector < matlab.apps.AppBase
             app.UITable.RowName = {};
             app.UITable.ForegroundColor = [0 0.451 0.7412];
             app.UITable.FontWeight = 'bold';
-            app.UITable.Position = [29 43 264 187];
+            app.UITable.Position = [24 30 264 215];
+
+            % Create RootLabel
+            app.RootLabel = uilabel(app.NumiiSolveUIFigure);
+            app.RootLabel.FontWeight = 'bold';
+            app.RootLabel.FontColor = [0 0.451 0.7412];
+            app.RootLabel.Position = [782 170 41 22];
+            app.RootLabel.Text = 'Root:';
+
+            % Create Label_root
+            app.Label_root = uilabel(app.NumiiSolveUIFigure);
+            app.Label_root.HorizontalAlignment = 'right';
+            app.Label_root.FontName = 'Britannic Bold';
+            app.Label_root.FontSize = 18;
+            app.Label_root.FontWeight = 'bold';
+            app.Label_root.FontColor = [0.4706 0.6706 0.1882];
+            app.Label_root.Position = [821 170 118 22];
+            app.Label_root.Text = '';
+
+            % Create EaLabel
+            app.EaLabel = uilabel(app.NumiiSolveUIFigure);
+            app.EaLabel.FontWeight = 'bold';
+            app.EaLabel.FontColor = [0 0.451 0.7412];
+            app.EaLabel.Position = [782 223 40 22];
+            app.EaLabel.Text = 'Ea:';
+
+            % Create Label_ea
+            app.Label_ea = uilabel(app.NumiiSolveUIFigure);
+            app.Label_ea.HorizontalAlignment = 'right';
+            app.Label_ea.FontName = 'Britannic Bold';
+            app.Label_ea.FontSize = 18;
+            app.Label_ea.FontWeight = 'bold';
+            app.Label_ea.FontColor = [0.4706 0.6706 0.1882];
+            app.Label_ea.Position = [822 223 118 22];
+            app.Label_ea.Text = '';
+
+            % Create UITable3
+            app.UITable3 = uitable(app.NumiiSolveUIFigure);
+            app.UITable3.ColumnName = '';
+            app.UITable3.RowName = {};
+            app.UITable3.ForegroundColor = [0 0.451 0.7412];
+            app.UITable3.FontWeight = 'bold';
+            app.UITable3.Position = [859 6 82 25];
         end
     end
 

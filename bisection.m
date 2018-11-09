@@ -1,67 +1,75 @@
-%
-% Original  : Naomi Macias Honti 
-% Edited by : Mildred Gil Melchor 
-% Created   : 05/10/2018
-% Edited    : 11/07/2018
-
 %Parameters: handle, min, max, #iteretions
+%output    : root, ea, vector, message
 function [varargout] = bisection(h, min, max, it)
-%Se calcula Xr con:
-%Xr = (Xi+Xu)/2
-%Se calcula Ea con:
-%Ea = abs((Xr-Xrp)/Xr)*100
-%Se encuentra raiz cuando handle(Xr)=0 
+
 handle = matlabFunction(evalin(symengine, h));
 Xi = min;
 Xu = max;
-continuar = true;
-encontrado = false;
-while(continuar)
-    iteraciones = it;
-    fprintf('\n');
-    contador = 1;
-    Ea = 0;
-    varargout{3}=[];
-    while(contador <= iteraciones)
-        Xr = (Xi+Xu)/2;
-        if(contador>1)
-            Ea = abs((Xr-Ea)/Xr)*100;
-            varargout{3} = [varargout{3} Ea];
-        end        
+is_continue = true;
+is_root = false;
+
+%verify if limits are roots
+if(handle(Xi)*handle(Xu) == 0)
+  is_continue = false;
+  
+  if(handle(Xi) == 0) 
+    varargout{1} = Xi;
+  else
+    varargout{1} = Xu;
+  end
+
+  varargout{2} = 0;
+  varargout{3} = [0];
+  varargout{4} = 'Success!';
+
+%verify if limits are correct (positive and negative)
+else
+  if(handle(Xi)*handle(Xu) > 0)
+      is_continue = false;
+
+      varargout{1} = 0;
+      varargout{2} = 0;
+      varargout{3} = [0];
+      varargout{4} = 'Both evaluated limits have the same sign.';
+  end
+end
+
+while(is_continue)
+    iteration = it;
+    counter = 1;
+    ea = 0;
+    varargout{3} = [];
+    while(counter <= iteration)
+        Xr = (Xi + Xu) / 2;
+        if(counter > 1)
+            ea = abs((Xr - ea) / Xr) * 100;
+            varargout{3} = [varargout{3} ea];
+        end
         if(round(handle(Xr),4)== 0)
             varargout{1} = Xr;
-            varargout{2} = Ea;
-            contador = iteraciones;
-            encontrado = true;
+            counter = iteration;
+            is_root = true;
+            varargout{4} = 'Success!';
+            is_continue = false;
         elseif(handle(Xr)*handle(Xi) < 0)
-            fprintf("\nXu toma el valor de Xr");
             Xu = Xr;
         elseif(handle(Xr)*handle(Xi) > 0)
-            fprintf("\nXi toma el valor de Xr");
             Xi = Xr;
         end
-        Ea = Xr;
-        contador=contador+1;
+        ea = Xr;
+        varargout{2} = ea;
+        counter = counter + 1;
     end
-    fprintf("\n");
-    if(encontrado)
-        varargout{4} = 'Success!';
-        fprintf('Se encontro una raiz en %.4f\n',Xr);
-        fprintf('Con un valor aproximado de error de %.2f\n',Ea);
-        continuar = false;
-        fprintf('\n');
-    else
-        if(Xi==Xu)
+    if(~is_root)
+        varargout{1} = Xr;
+        if(Xi == Xu)
             varargout{4} = 'Try with other limits.';
-            fprintf('No hay una raiz entre los limites recibidos');
-            continuar = false;
-            fprintf('\n');
+            is_continue = false;
         else
             varargout{4} = 'Try with more iterations.';
-            fprintf('Aun no se ha encontrado una raiz\n');
-            continuar = false;
-            fprintf('\n');
+            is_continue = false;
         end
     end
 end
-end
+
+display(varargout{3});
