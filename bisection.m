@@ -1,5 +1,5 @@
-%Parameters: handle, min, max, #iteretions
-%output    : root, ea, vector, message
+%Input  : handle, min, max, #iteretions
+%Output sym: root, ea, vector, message
 function [varargout] = bisection(h, min, max, it)
 
 handle = matlabFunction(evalin(symengine, h));
