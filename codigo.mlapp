@@ -43,6 +43,9 @@ classdef methodSelector < matlab.apps.AppBase
         EaLabel                         matlab.ui.control.Label
         Label_ea                        matlab.ui.control.Label
         UITable3                        matlab.ui.control.Table
+        NRTable                         matlab.ui.control.Table
+        XiSpinner_2Label                matlab.ui.control.Label
+        XiSpinner_NR                    matlab.ui.control.Spinner
     end
 
     
@@ -77,10 +80,15 @@ classdef methodSelector < matlab.apps.AppBase
             app.UITable2.Enable = 'on';
             app.UITable2.Data = zeros(2,1);
             app.UITable3.Visible = false;
+            app.NRTable.Visible = false;
             app.AXLabel.Visible = false;
             app.BLabel.Visible = false;
             app.UITable.ColumnEditable = true;
             app.UITable2.ColumnEditable = true;
+            %NR spinner
+            app.XiSpinner_NR.Visible = false;
+            app.XiSpinner_NR.Value = 2;           
+            app.XiSpinner_2Label.Visible = false;
             % x#
             app.XiSpinner.Visible = false;
             app.XiSpinner.Value = 2;
@@ -119,54 +127,7 @@ classdef methodSelector < matlab.apps.AppBase
             x = min:position:max;
             y = handle(x);
             plot(app.uiAxesFunction,x,y,'Linewidth',2);
-        end
-       %{
-        function [root, ea, EaR, msg] = bisection(app,h, min, max, it)
-            % Parameters: app, handle, min, max, #iteretions
-            handle = matlabFunction(evalin(symengine, h));
-            Xi = min;
-            Xu = max;
-            continuar = true;
-            encontrado = false;
-            while(continuar)
-                iteraciones = it;
-                contador = 1;
-                ea = 0;
-                EaR=[];
-                while(contador <= iteraciones)
-                    Xr = (Xi+Xu)/2;
-                    if(contador>1)
-                        ea = abs((Xr-ea)/Xr)*100;
-                        EaR = [EaR ea];
-                    end
-                    if(round(handle(Xr),4)== 0)
-                        root = Xr;
-                        contador = iteraciones;
-                        encontrado = true;
-                        msg = 'Success!';
-                        continuar = false;
-                    elseif(handle(Xr)*handle(Xi) < 0)
-                        Xu = Xr;
-                    elseif(handle(Xr)*handle(Xi) > 0)
-                        Xi = Xr;
-                    end
-                    ea = Xr;
-                    contador=contador+1;
-                end
-                if(~encontrado)
-                    root = Xr;
-                    if(Xi==Xu)
-                        msg = 'Try with other limits.';
-                        continuar = false;
-                    else
-                        msg = 'Try with more iterations.';
-                        continuar = false;
-                    end
-                end
-            end
-        end
-    
-    %}     
+        end          
     end
 
     methods (Access = private)
@@ -290,7 +251,16 @@ classdef methodSelector < matlab.apps.AppBase
             if(value == "Gauss-Seidel")
                 %
             elseif(value == "Newton-Raphson")
-                % missing code
+                % hide guass-seidel components
+                app.XiSpinner.Visible = false;
+                app.XiSpinnerLabel.Visible = false;
+                app.UITable.Visible = false;
+                %appear Newton Rhapson components
+                app.XiSpinner_NR.Visible = true;
+                app.XiSpinner_2Label.Visible = true;
+                app.UITable3.Visible = true;
+                app.NRTable.Visible = true;
+                app.uiAxesError.Visible = true;
             end
         end
 
@@ -389,9 +359,76 @@ classdef methodSelector < matlab.apps.AppBase
                             app.Label_ea.Text = num2str(ea,'%4.5f');
                             app.Label_msg.Text = msg;
                         case "Regular Falsi"
-                            %
+                            % Get the input values
+                            handle = app.EcuationEditField.Value;
+                            maxVal = app.MaxEditField_2.Value;
+                            minVal = app.MinEditField_2.Value;
+                            ite = app.IterationsEditField.Value;
+                            % Call the function
+                            [root, ea, Ea, msg] = regularFalsi(handle,minVal,maxVal,ite);
+                            EaSize = size(Ea); 
+                            % Graph the Ea
+                            xi = 1; 
+                            xn = EaSize(1,2);
+                            yi = min(Ea); 
+                            yn = max(Ea);
+                            plot(app.uiAxesError,Ea,'-o','Linewidth',2);
+                            if(xn <= 1)
+                                xn = inf;
+                                yi = 0;
+                                yn = inf;
+                            end
+                            display(ea);
+                            app.uiAxesError.XLim = [xi xn];                           
+                            app.uiAxesError.YLim = [yi yn];                           
+                            % Graph the function
+                            graphicate(app,minVal,maxVal,handle);
+                            % Appear the Ea, Root, Msg 
+                            app.EaLabel.Visible = true;
+                            app.RootLabel.Visible = true;
+                            app.MsgLabel.Visible = true;
+                            app.Label_root.Visible = true;
+                            app.Label_ea.Visible = true;
+                            app.Label_msg.Visible = true;
+                            % Show the data
+                            app.Label_root.Text = num2str(root,'%4.5f');
+                            app.Label_ea.Text = num2str(ea,'%4.5f');
+                            app.Label_msg.Text = msg;
                         case "Simple Iteration fix point"
-                            %
+                            % Get the input values
+                            handle = app.EcuationEditField.Value;
+                            iniVal = app.InitialValueEditField.Value;
+                            ite = app.IterationsEditField.Value;
+                            % Call the function
+                            [root, ea, Ea, msg] = fixPoint(handle,iniVal,ite);
+                            EaSize = size(Ea); 
+                            % Graph the Ea
+                            xi = 1; 
+                            xn = EaSize(1,2);
+                            yi = min(Ea); 
+                            yn = max(Ea);
+                            plot(app.uiAxesError,Ea,'-o','Linewidth',2);
+                            if(xn <= 1)
+                                xn = inf;
+                                yi = 0;
+                                yn = inf;
+                            end
+                            display(ea);
+                            app.uiAxesError.XLim = [xi xn];                           
+                            app.uiAxesError.YLim = [yi yn];                           
+                            % Graph the function
+                            graphicate(app,iniVal,(root-iniVal)*2,handle);
+                            % Appear the Ea, Root, Msg 
+                            app.EaLabel.Visible = true;
+                            app.RootLabel.Visible = true;
+                            app.MsgLabel.Visible = true;
+                            app.Label_root.Visible = true;
+                            app.Label_ea.Visible = true;
+                            app.Label_msg.Visible = true;
+                            % Show the data
+                            app.Label_root.Text = num2str(root,'%4.5f');
+                            app.Label_ea.Text = num2str(ea,'%4.5f');
+                            app.Label_msg.Text = msg;
                         case "Newton- Raphson"
                             %
                     end
@@ -407,7 +444,13 @@ classdef methodSelector < matlab.apps.AppBase
                         case "Gauss-Seidel"
                             %
                         case "Newton-Raphson"
-                            % missing code
+                            matEq = app.NRTable.Data;
+                            vVal = app.UITable2.Data;
+                            it = app.IterationsEditField.Value;
+                            [vRoot, vEa, msg] = NRS(matEq, vVal, it);
+                            app.UITable3.Data = vRoot;
+                            plot(app.uiAxesError,transpose(vEa),'-o','Linewidth',2);  
+                            app.Label_msg.Text = msg;
                     end
                 case app.DiferentialequationsystemButton_2
                     switch(app.ListBox_4.Value)
@@ -424,6 +467,18 @@ classdef methodSelector < matlab.apps.AppBase
             value = app.XiSpinner.Value;
             % each time the value is changed, the tables are updated
             app.UITable.Data = zeros(value);
+            app.UITable2.Data = zeros(value,1);
+        end
+
+        % Value changed function: XiSpinner_NR
+        function XiSpinner_NRValueChanged(app, event)
+            value = app.XiSpinner_NR.Value;
+            f = 'f(x)';
+            for i=2:value
+                % each time the value is changed, the tables are updated
+                f = [ f;'f(x)'];
+            end
+            app.NRTable.Data = cellstr(f);
             app.UITable2.Data = zeros(value,1);
         end
     end
@@ -530,6 +585,7 @@ classdef methodSelector < matlab.apps.AppBase
             title(app.uiAxesError, 'Error')
             xlabel(app.uiAxesError, 'Iterations')
             ylabel(app.uiAxesError, 'Ea')
+            app.uiAxesError.PlotBoxAspectRatio = [1 0.610062893081761 0.610062893081761];
             app.uiAxesError.FontName = 'Arial Rounded MT Bold';
             app.uiAxesError.Box = 'on';
             app.uiAxesError.XGrid = 'on';
@@ -664,6 +720,7 @@ classdef methodSelector < matlab.apps.AppBase
             title(app.uiAxesFunction, 'Function')
             xlabel(app.uiAxesFunction, 'x')
             ylabel(app.uiAxesFunction, 'f(x)')
+            app.uiAxesFunction.PlotBoxAspectRatio = [1 0.610062893081761 0.610062893081761];
             app.uiAxesFunction.FontName = 'Arial Rounded MT Bold';
             app.uiAxesFunction.Box = 'on';
             app.uiAxesFunction.XGrid = 'on';
@@ -761,7 +818,34 @@ classdef methodSelector < matlab.apps.AppBase
             app.UITable3.RowName = {};
             app.UITable3.ForegroundColor = [0 0.451 0.7412];
             app.UITable3.FontWeight = 'bold';
-            app.UITable3.Position = [859 6 82 25];
+            app.UITable3.Position = [871 30 82 214];
+
+            % Create NRTable
+            app.NRTable = uitable(app.NumiiSolveUIFigure);
+            app.NRTable.ColumnName = '';
+            app.NRTable.RowName = {};
+            app.NRTable.ColumnEditable = true;
+            app.NRTable.ForegroundColor = [0 0.451 0.7412];
+            app.NRTable.FontWeight = 'bold';
+            app.NRTable.Position = [24 29 264 215];
+
+            % Create XiSpinner_2Label
+            app.XiSpinner_2Label = uilabel(app.NumiiSolveUIFigure);
+            app.XiSpinner_2Label.FontWeight = 'bold';
+            app.XiSpinner_2Label.FontColor = [0 0.451 0.7412];
+            app.XiSpinner_2Label.Position = [20 285 40 28];
+            app.XiSpinner_2Label.Text = 'Xi';
+
+            % Create XiSpinner_NR
+            app.XiSpinner_NR = uispinner(app.NumiiSolveUIFigure);
+            app.XiSpinner_NR.Limits = [1 Inf];
+            app.XiSpinner_NR.RoundFractionalValues = 'on';
+            app.XiSpinner_NR.ValueDisplayFormat = '%11g';
+            app.XiSpinner_NR.ValueChangedFcn = createCallbackFcn(app, @XiSpinner_NRValueChanged, true);
+            app.XiSpinner_NR.FontWeight = 'bold';
+            app.XiSpinner_NR.FontColor = [0 0.451 0.7412];
+            app.XiSpinner_NR.Position = [59 285 204 27];
+            app.XiSpinner_NR.Value = 1;
         end
     end
 
