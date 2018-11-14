@@ -1,0 +1,47 @@
+Bisection
+ecuation: x^3-1
+Min: 0
+Max: 1.5
+Iterations: 30
+
+Ea: 0.00458
+Root: 0.99998
+
+Regular Falsi
+ecuation: x^3-1
+Min: 0
+Max: 1.5
+Iterations: 30
+
+Ea: 0.00253
+Root: 0.99999
+
+Fix point
+(agregar input para la ecuacion original y que sea esa la que grafique)
+ecuation: exp(-x)
+initial value: 0
+Iterations: 30
+
+Ea = 0.00216
+Root = 0.56715
+
+Gauss-Seidel
+AX#
+3	-0.1	-0.2
+0.1	7	-0.3
+0.3	-0.2	10
+B
+7.85
+-19.3
+71.4
+Iterations: 7
+
+Values
+3.00000
+-2.50000
+7.00000
+
+Error
+0.0011
+4.8174e-04
+1.0079e-05
