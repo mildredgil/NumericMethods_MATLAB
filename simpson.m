@@ -1,4 +1,6 @@
-function [varargout] = simpson2(eq, min, max, it)
+%Parameters: function, min, max, it
+%output    : integration, vector, message 
+function [varargout] = simpson(eq, min, max, it)
 
 varargout{1} = 0;
 varargout{2} = 0;
