@@ -23,7 +23,7 @@ else
         is_continue = false;
         varargout{1} = 0;
         varargout{2} = 0;
-        varargout{3} = 0;
+        varargout{3} = [0];
         varargout{4} = 'Try with other limits.';
     end
 end
