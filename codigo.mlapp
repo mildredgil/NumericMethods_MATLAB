@@ -46,6 +46,14 @@ classdef methodSelector < matlab.apps.AppBase
         NRTable                         matlab.ui.control.Table
         XiSpinner_2Label                matlab.ui.control.Label
         XiSpinner_NR                    matlab.ui.control.Spinner
+        yEditFieldLabel                 matlab.ui.control.Label
+        yEditField                      matlab.ui.control.NumericEditField
+        xEditField_2Label               matlab.ui.control.Label
+        xEditField                      matlab.ui.control.NumericEditField
+        hEditFieldLabel                 matlab.ui.control.Label
+        hEditField                      matlab.ui.control.NumericEditField
+        SegmentsLabel                   matlab.ui.control.Label
+        SegmentsEditField               matlab.ui.control.NumericEditField
     end
 
     
@@ -85,6 +93,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.BLabel.Visible = false;
             app.UITable.ColumnEditable = true;
             app.UITable2.ColumnEditable = true;
+            app.NRTable.Data = cellstr(['a1*x1^b1+a2*x2^b2+...+an*xn^bn';'a1*x1^b1+a2*x2^b2+...+an*xn^bn']);
             %NR spinner
             app.XiSpinner_NR.Visible = false;
             app.XiSpinner_NR.Value = 2;           
@@ -116,9 +125,21 @@ classdef methodSelector < matlab.apps.AppBase
             % Derivative
             app.fxLabel.Visible = false;
             app.Label2.Visible = false;
+            %initial variables
+            app.xEditField.Visible = false;
+            app.xEditField_2Label.Visible = false;
+            app.yEditField.Visible = false;
+            app.hEditField.Visible = false;
+            app.hEditFieldLabel.Visible = false;
+            app.yEditFieldLabel.Visible = false;
+            app.SegmentsEditField.Visible = false;
+            app.SegmentsLabel.Visible = false;
+
         end
         
         function results = graphicate(app,min,max,h)
+            %delete everthing from graph
+            cla(app.uiAxesFunction);
             % Graph the function
             title(app.uiAxesFunction, h);
             handle = matlabFunction(evalin(symengine, h));
@@ -128,6 +149,24 @@ classdef methodSelector < matlab.apps.AppBase
             y = handle(x);
             plot(app.uiAxesFunction,x,y,'Linewidth',2);
         end          
+
+        function graphicate2func(app,min,max,h,v)
+            display(v);
+            %delete everthing from graph
+            cla(app.uiAxesFunction);
+            % Graph the function
+            title(app.uiAxesFunction, h);
+            handle = matlabFunction(evalin(symengine, h));
+            % Calculing the values
+            position = (max-min)/100;
+            x = min:position:max;
+            y = handle(x);
+            plot(app.uiAxesFunction,v(1,:),v(2,:), '--bo', 'Linewidth',1,'MarkerFaceColor','b');
+            hold(app.uiAxesFunction, 'on');
+            plot(app.uiAxesFunction,x,y,'-r','linewidth',2,'MarkerFaceColor','r');     
+            hold(app.uiAxesFunction, 'off')
+        end
+        
     end
 
     methods (Access = private)
@@ -187,7 +226,21 @@ classdef methodSelector < matlab.apps.AppBase
                     app.ListBox_3.Visible=true;
                     % by default is selected Trapezoidal multiple
                     app.ListBox_3.Value = "Trapezoidal multiple";
-                    % missing code
+                    % Ecuation
+                    app.EcuationEditField.Visible = true;
+                    app.EcuationxLabel.Visible = true;
+                    % Range
+                    app.MaxEditField_2.Visible = true;
+                    app.MaxEditField_2Label.Visible = true;
+                    app.MinEditField_2Label.Visible = true;
+                    app.MinEditField_2.Visible = true;
+                    app.RangeofIntervalLabel.Visible = true;
+                    % Segments 
+                    app.SegmentsEditField.Visible = true;
+                    app.SegmentsLabel.Visible = true;
+                    % Graph
+                    app.uiAxesFunction.Visible = true;
+                    
                 case app.NolinearequationsystemButton_2
                     app.ListBox.Visible=true;
                     % by default is selected Gauss-Seidel
@@ -210,7 +263,25 @@ classdef methodSelector < matlab.apps.AppBase
                     app.ListBox_4.Visible=true;
                     % by default is selected Euler
                     app.ListBox_4.Value = "Euler";
-                    % missing code
+                    
+                    % Ecuation
+                    app.EcuationEditField.Visible = true;
+                    app.EcuationxLabel.Visible = true;
+                    
+                    %initial variables
+                    app.xEditField.Visible = true;
+                    app.yEditField.Visible = true;
+                    app.hEditField.Visible = true;
+                    app.yEditFieldLabel.Visible = true;
+                    app.hEditFieldLabel.Visible = true;
+                    app.xEditField_2Label.Visible = true;
+                    
+                    %Itereations
+                    app.IterationsLabel.Visible = true;
+                    app.IterationsEditField.Visible = true;
+                    
+                    %Graphics
+                    app.uiAxesFunction.Visible = true;
             end
         end
 
@@ -221,6 +292,25 @@ classdef methodSelector < matlab.apps.AppBase
             func(app);
             % objects that all functions need
             app.ListBox_4.Visible = true;
+            
+            % Ecuation
+            app.EcuationEditField.Visible = true;
+            app.EcuationxLabel.Visible = true;
+            
+            %initial variables
+            app.xEditField.Visible = true;
+            app.yEditField.Visible = true;
+            app.hEditField.Visible = true;
+            app.yEditFieldLabel.Visible = true;
+            app.hEditFieldLabel.Visible = true;
+            app.xEditField_2Label.Visible = true;
+            
+            %Itereations
+            app.IterationsLabel.Visible = true;
+            app.IterationsEditField.Visible = true;
+            
+            %Graphics
+            app.uiAxesFunction.Visible = true;
             % objects of each function
             if(value == "Euler")
                 % missing code
@@ -358,7 +448,7 @@ classdef methodSelector < matlab.apps.AppBase
                             app.Label_root.Text = num2str(root,'%4.5f');
                             app.Label_ea.Text = num2str(ea,'%4.5f');
                             app.Label_msg.Text = msg;
-                        case "Regular Falsi"
+                        case "Regular Falsi"                            
                             % Get the input values
                             handle = app.EcuationEditField.Value;
                             maxVal = app.MaxEditField_2.Value;
@@ -397,10 +487,10 @@ classdef methodSelector < matlab.apps.AppBase
                         case "Simple Iteration fix point"
                             % Get the input values
                             handle = app.EcuationEditField.Value;
-                            iniVal = app.InitialValueEditField.Value;
+                            initVal = app.InitialValueEditField.Value;
                             ite = app.IterationsEditField.Value;
                             % Call the function
-                            [root, ea, Ea, msg] = fixPoint(handle,iniVal,ite);
+                            [root, ea, Ea, msg] = fixPoint(handle,initVal,ite);
                             EaSize = size(Ea); 
                             % Graph the Ea
                             xi = 1; 
@@ -413,11 +503,10 @@ classdef methodSelector < matlab.apps.AppBase
                                 yi = 0;
                                 yn = inf;
                             end
-                            display(ea);
                             app.uiAxesError.XLim = [xi xn];                           
                             app.uiAxesError.YLim = [yi yn];                           
                             % Graph the function
-                            graphicate(app,iniVal,(root-iniVal)*2,handle);
+                            graphicate(app,initVal,root*2,handle);
                             % Appear the Ea, Root, Msg 
                             app.EaLabel.Visible = true;
                             app.RootLabel.Visible = true;
@@ -430,12 +519,29 @@ classdef methodSelector < matlab.apps.AppBase
                             app.Label_ea.Text = num2str(ea,'%4.5f');
                             app.Label_msg.Text = msg;
                         case "Newton- Raphson"
-                            %
+                            % missing code
                     end
                 case app.NumericalintegrationButton_2
                     switch(app.ListBox_3.Value)
                         case "Trapezoidal multiple"
-                            % missing code
+                            % Get the input values
+                            handle = app.EcuationEditField.Value;
+                            maxVal = app.MaxEditField_2.Value;
+                            minVal = app.MinEditField_2.Value;
+                            s = app.SegmentsEditField.Value;
+                            % Call the function
+                            [root, v, msg] = trapezoidal(handle,minVal,maxVal,s);
+                            mn = min(v(1,:));
+                            mx = max(v(1,:));
+                            graphicate2func(app,mn,mx,handle,v);
+                            % Appear the Root, Msg 
+                            app.RootLabel.Visible = true;
+                            app.MsgLabel.Visible = true;
+                            app.Label_root.Visible = true;
+                            app.Label_msg.Visible = true;
+                            % Show the data
+                            app.Label_root.Text = num2str(root,'%4.5f');
+                            app.Label_msg.Text = msg;
                         case "Simpson 3/8 multiple"
                             % missing code
                     end
@@ -455,7 +561,29 @@ classdef methodSelector < matlab.apps.AppBase
                 case app.DiferentialequationsystemButton_2
                     switch(app.ListBox_4.Value)
                         case "Euler"
-                            % missing code
+                            % Ecuation
+                            handle = app.EcuationEditField.Value;
+                            %initial variables
+                            x = app.xEditField.Value;
+                            y = app.yEditField.Value;
+                            h = app.hEditField.Value;
+                                                        
+                            %Itereations
+                            it = app.IterationsEditField.Value;
+                            
+                            [root,v,msg] = Euler(handle,x,y,h,it);
+                            mn = min(v(1,:));
+                            mx = max(v(1,:));
+                            display(v);
+                            graphicate2func(app,mn,mx,handle,v);
+                            % Appear the Root, Msg 
+                            app.RootLabel.Visible = true;
+                            app.MsgLabel.Visible = true;
+                            app.Label_root.Visible = true;
+                            app.Label_msg.Visible = true;
+                            % Show the data
+                            app.Label_root.Text = num2str(root,'%4.5f');
+                            app.Label_msg.Text = msg;
                         case "Clasico Runge-kutta"
                             % missing code
                     end
@@ -473,10 +601,10 @@ classdef methodSelector < matlab.apps.AppBase
         % Value changed function: XiSpinner_NR
         function XiSpinner_NRValueChanged(app, event)
             value = app.XiSpinner_NR.Value;
-            f = 'f(x)';
+            f = ['a1*x1^b1+a2*x2^b2+...+an*xn^bn'];
             for i=2:value
                 % each time the value is changed, the tables are updated
-                f = [ f;'f(x)'];
+                f = [ f;'a1*x1^b1+a2*x2^b2+...+an*xn^bn'];
             end
             app.NRTable.Data = cellstr(f);
             app.UITable2.Data = zeros(value,1);
@@ -638,6 +766,7 @@ classdef methodSelector < matlab.apps.AppBase
 
             % Create IterationsLabel
             app.IterationsLabel = uilabel(app.NumiiSolveUIFigure);
+            app.IterationsLabel.HorizontalAlignment = 'right';
             app.IterationsLabel.FontName = 'Arial Rounded MT Bold';
             app.IterationsLabel.FontWeight = 'bold';
             app.IterationsLabel.FontColor = [0 0.451 0.7412];
@@ -818,7 +947,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.UITable3.RowName = {};
             app.UITable3.ForegroundColor = [0 0.451 0.7412];
             app.UITable3.FontWeight = 'bold';
-            app.UITable3.Position = [871 30 82 214];
+            app.UITable3.Position = [857 30 82 214];
 
             % Create NRTable
             app.NRTable = uitable(app.NumiiSolveUIFigure);
@@ -833,7 +962,7 @@ classdef methodSelector < matlab.apps.AppBase
             app.XiSpinner_2Label = uilabel(app.NumiiSolveUIFigure);
             app.XiSpinner_2Label.FontWeight = 'bold';
             app.XiSpinner_2Label.FontColor = [0 0.451 0.7412];
-            app.XiSpinner_2Label.Position = [20 285 40 28];
+            app.XiSpinner_2Label.Position = [20 287 40 28];
             app.XiSpinner_2Label.Text = 'Xi';
 
             % Create XiSpinner_NR
@@ -844,8 +973,72 @@ classdef methodSelector < matlab.apps.AppBase
             app.XiSpinner_NR.ValueChangedFcn = createCallbackFcn(app, @XiSpinner_NRValueChanged, true);
             app.XiSpinner_NR.FontWeight = 'bold';
             app.XiSpinner_NR.FontColor = [0 0.451 0.7412];
-            app.XiSpinner_NR.Position = [59 285 204 27];
+            app.XiSpinner_NR.Position = [59 287 204 27];
             app.XiSpinner_NR.Value = 1;
+
+            % Create yEditFieldLabel
+            app.yEditFieldLabel = uilabel(app.NumiiSolveUIFigure);
+            app.yEditFieldLabel.FontName = 'Arial Rounded MT Bold';
+            app.yEditFieldLabel.FontWeight = 'bold';
+            app.yEditFieldLabel.FontColor = [0 0.451 0.7412];
+            app.yEditFieldLabel.Position = [424 286 25 30];
+            app.yEditFieldLabel.Text = 'y';
+
+            % Create yEditField
+            app.yEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
+            app.yEditField.FontName = 'Arial Rounded MT Bold';
+            app.yEditField.FontWeight = 'bold';
+            app.yEditField.FontColor = [0 0.451 0.7412];
+            app.yEditField.Position = [433 287 71 28];
+
+            % Create xEditField_2Label
+            app.xEditField_2Label = uilabel(app.NumiiSolveUIFigure);
+            app.xEditField_2Label.FontName = 'Arial Rounded MT Bold';
+            app.xEditField_2Label.FontWeight = 'bold';
+            app.xEditField_2Label.FontColor = [0 0.451 0.7412];
+            app.xEditField_2Label.Position = [338 285 10 30];
+            app.xEditField_2Label.Text = 'x';
+
+            % Create xEditField
+            app.xEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
+            app.xEditField.FontName = 'Arial Rounded MT Bold';
+            app.xEditField.FontWeight = 'bold';
+            app.xEditField.FontColor = [0 0.451 0.7412];
+            app.xEditField.Position = [347 287 71 28];
+
+            % Create hEditFieldLabel
+            app.hEditFieldLabel = uilabel(app.NumiiSolveUIFigure);
+            app.hEditFieldLabel.HorizontalAlignment = 'center';
+            app.hEditFieldLabel.FontName = 'Arial Rounded MT Bold';
+            app.hEditFieldLabel.FontWeight = 'bold';
+            app.hEditFieldLabel.FontColor = [0 0.451 0.7412];
+            app.hEditFieldLabel.Position = [516 286 17 30];
+            app.hEditFieldLabel.Text = 'h';
+
+            % Create hEditField
+            app.hEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
+            app.hEditField.FontName = 'Arial Rounded MT Bold';
+            app.hEditField.FontWeight = 'bold';
+            app.hEditField.FontColor = [0 0.451 0.7412];
+            app.hEditField.Position = [532 288 71 28];
+
+            % Create SegmentsLabel
+            app.SegmentsLabel = uilabel(app.NumiiSolveUIFigure);
+            app.SegmentsLabel.HorizontalAlignment = 'right';
+            app.SegmentsLabel.FontName = 'Arial Rounded MT Bold';
+            app.SegmentsLabel.FontWeight = 'bold';
+            app.SegmentsLabel.FontColor = [0 0.451 0.7412];
+            app.SegmentsLabel.Position = [606 290 63 22];
+            app.SegmentsLabel.Text = 'Segments';
+
+            % Create SegmentsEditField
+            app.SegmentsEditField = uieditfield(app.NumiiSolveUIFigure, 'numeric');
+            app.SegmentsEditField.Limits = [1 Inf];
+            app.SegmentsEditField.FontName = 'Arial Rounded MT Bold';
+            app.SegmentsEditField.FontWeight = 'bold';
+            app.SegmentsEditField.FontColor = [0 0.451 0.7412];
+            app.SegmentsEditField.Position = [676 287 89 28];
+            app.SegmentsEditField.Value = 1;
         end
     end
 

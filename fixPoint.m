@@ -15,7 +15,7 @@ while(counter <= it)
     end
     if(round(X,4)==round(Xp,4))
         varargout{1} = X;
-        counter = iteraciones;
+        counter = it;
         is_root = true;
         varargout{4} = 'Success!';
     end

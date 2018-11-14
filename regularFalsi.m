@@ -15,7 +15,7 @@ if(handle(Xi)*handle(Xu) == 0)
         varargout{1} = Xu;
     end
     varargout{2} = 0;
-    varargout{3} = [0];
+    varargout{3} = 0;
     varargout{4} = 'Success!';
 else
     %verify if limits are correct (positive and negative)
@@ -23,7 +23,7 @@ else
         is_continue = false;
         varargout{1} = 0;
         varargout{2} = 0;
-        varargout{3} = [0];
+        varargout{3} = 0;
         varargout{4} = 'Try with other limits.';
     end
 end
