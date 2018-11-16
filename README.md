@@ -45,3 +45,51 @@ Ovidio Daniel Cantu Puente | A00818034
 - V2.0.1
  
  Made by Naomi. Adaptation of versions. Correction of details in code and interface.
+
+- V2.0.2
+
+ Made by Mildred. Correction of corrections. Solution of some errors in code and interface.
+ 
+- V2.1
+
+ Made by Naomi. Application of the Regular Falsi function. Without modification to interface.
+ 
+- V2.2
+
+ Made by Naomi. Application of the Fix Point function. Without modification to interface.
+ 
+- V2.2.1
+
+ Made by Mildred and Naomi. Correction of Fix Point function. Misunderstandings inputs. Without modification to interface.
+ 
+- V2.2.2
+
+ Made by Mildred. Adaptation of the function. Specification for the graph of the function and for the ecuation input. The ecuation label is modificated for a label asking the clear ecuation for x.
+ 
+- V2.3
+
+ Made by Naomi. Application of Newton-Raphson function. Without modification to interface.
+ 
+- V2.3.1
+
+ Made by Mildred. Correction of Newton-Raphson function. Problems with the derivative. Without modification to interface.
+ 
+- V3.0
+
+ Made by Naomi. Application of Gauss-Seidel function. Without modification to interface.
+ 
+- V3.0.1
+
+ Made by Mildred and Naomi. Correction of Gauss-Seidel function. Discrepancy between the answers. Without modification to interface.
+ 
+- V3.0.2
+
+ Made by Mildred and Naomi. Improvement of the Gauss-Seidel function. Division between answer and error. The table for the answer is divided.
+ 
+- V3.1
+
+ Made by Mildred. Application of Newton-Raphson function. A table of strings is added.
+ 
+- V4.0
+
+ Made by Ovidio. Application of Trapezoidal function. 
