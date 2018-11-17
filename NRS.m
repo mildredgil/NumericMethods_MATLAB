@@ -39,7 +39,7 @@ function [varargout] = NRS(matEq, vVal, it)
         end
         vEa = [vEa, ea];
     end   
-    display(vpa(v));
+    
     varargout{1} = eval(vpa(v(:,it)));
     varargout{2} = vEa;
     varargout{3} = 'success!';

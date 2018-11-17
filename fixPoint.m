@@ -1,4 +1,4 @@
-%Parameters: handle, inicialValue, #iteretions
+%Parameters: handle, initialValue, #iteretions
 %output    : root, ea, vector, message
 function [varargout] = fixPoint(h, iv, it)
     handle = matlabFunction(evalin(symengine, h));
