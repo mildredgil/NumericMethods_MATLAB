@@ -1,3 +1,5 @@
+%Parameters: function, min, max, segments
+%output    : integration, vector, message 
 function [varargout] = simpson(eq, min, max, sgm)
     f = matlabFunction(evalin(symengine, eq));
     h = (max-min)/sgm;

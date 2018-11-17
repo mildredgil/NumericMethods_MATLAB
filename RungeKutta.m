@@ -25,8 +25,24 @@ function [varargout] = RungeKutta(f, initX, initY, h, it)
                xi = xi + h;
                vxy = [vxy, [xi; yi]];
            end
+           % Calculate x,y
+           minX = min(vxy(1,:));
+           maxX = max(vxy(1,:));
+                            
+           position = (maxX-minX)/it;
+           x = minX:position:maxX;
+           
+           minY = min(vxy(2,:));
+           maxY = max(vxy(2,:));
+                                        
+           position = (maxY-minY)/it;
+           y = minY:position:maxY;
+            
+           g = handle(x,y);
+           error = (g-vxy(2,:))./g;
+           
            varargout{1} = xi;
            varargout{2} = vxy;
-           varargout{3} = 'Success!';
-           
+           varargout{3} = error;
+           varargout{4} = 'Success!';     
 end

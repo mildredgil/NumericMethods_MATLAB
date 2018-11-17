@@ -13,10 +13,20 @@ function [varargout] = Euler(f, x, y, h, it)
                x = x + h;
                v = [v, [x;y]];
             end
-            varargout{1} = x;
-            varargout{2} = v;
-            %varargout{3} = realY;
-            varargout{3} = 'success';
+            % Calculate x,y
+           minX = min(v(1,:));
+           maxX = max(v(1,:));
+                            
+           position = (maxX-minX)/it;
+           x = minX:position:maxX;
+            
+           g = handle(x);
+           error = (g-v(2,:))./g;
+           
+           varargout{1} = x;
+           varargout{2} = v;
+           varargout{3} = error;
+           varargout{4} = 'success';
  end
                 
                 
