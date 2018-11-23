@@ -1,5 +1,5 @@
-%Parameters: function, initX, initY, h, Number of points
-%output    : root, vector, message
+%Parameters: Function, initX, initY, h, Number of points
+%output    : Root, vector, message
 function [varargout] = RungeKutta(f, initX, initY, h, it)
            handle = matlabFunction(evalin(symengine, f)); 
            xi = initX;
